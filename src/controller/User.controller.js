@@ -29,7 +29,8 @@ export const RegisterUser = AsyncHandler(async (req, res) => {
 export const Loginuser = AsyncHandler(async (req, res) => {
     const { username, password } = req.body;
 
-    const user = await FindByUsernameOrEmail(username);
+
+    const user = await FindByUsernameOrEmail(username,username);
 
     if (!user) {
         throw new BadRequestError("Bad Credintials", "Login user function")
