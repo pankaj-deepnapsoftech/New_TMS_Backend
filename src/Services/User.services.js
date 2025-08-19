@@ -11,13 +11,18 @@ export const FindByUsernameOrEmail = async (username,email) => {
 };
 
 export const FindByEmail = async (email) => {
-    const data = await UserModel.findOne({email:email}).select("-password").lean();
+    const data = await UserModel.findOne({email:email}).select("-password -refresh_token").lean();
     return data;
 }
 
 
 export const FindByUsername = async(username) => {
-    const data = await UserModel.findOne({username}).select("-password").lean();
+    const data = await UserModel.findOne({username}).select("-password -refresh_token").lean();
+    return data;
+}
+
+export const FindById =  async(id) => {
+    const data = await UserModel.findById(id).select("-password -refresh_token").lean();
     return data;
 }
 

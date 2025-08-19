@@ -10,6 +10,10 @@ export const RegisterValidation = object({
 });
 
 
+export const LoginValidation = object({
+    username:string().required("email or Username is required field"),
+    password:string().min(8).max(16).required("Password is required field")
+})
 
 
 
