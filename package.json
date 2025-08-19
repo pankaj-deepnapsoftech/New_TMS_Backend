@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
+  
   "scripts": {
-    "dev": "npm run lint && nodemon src/index.js | pino-pretty -c",
+    "dev": "npm run lint && nodemon src/index.js ",
     "start": "node src/index.js",
     "production": "pm2 start src/index.js --name New-TMS-Backend",
     "lint": "eslint . --fix",
@@ -15,17 +16,18 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "chalk": "^5.6.0",
     "compression": "^1.8.1",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "hpp": "^0.2.3",
     "http-status-codes": "^2.3.0",
-    "module-alias": "^2.2.3",
     "mongoose": "^8.17.1",
-    "pino": "^9.9.0",
-    "pino-pretty": "^13.1.1",
-    "winston": "^3.17.0"
+    "winston": "^3.17.0",
+    "xss-clean": "^0.1.4",
+    "yup": "^1.7.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.28.3",

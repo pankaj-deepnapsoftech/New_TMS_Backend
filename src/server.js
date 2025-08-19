@@ -1,15 +1,19 @@
 import http from "http";
 
 import compression from "compression";
+import cookieParser from 'cookie-parser';
 import cors from "cors";
 // eslint-disable-next-line import/order
 import { json, urlencoded } from "express";
 
 
 // ----------- LOCAL IMPORTS HERE --------------------
+import helmet from 'helmet';
+import hpp from 'hpp';
 import { StatusCodes } from "http-status-codes";
 
 import { config } from "./config/env.config.js";
+import { DbConnect } from "./connections/dbConnection.js";
 import MainRoutes from "./routes.js";
 import { BadRequestError } from "./utils/CoustomError.js";
 import getLogger from "./utils/logger.js";
@@ -24,6 +28,7 @@ export const Start = (app) => {
     MiddlewareHandler(app); // this function is manage all express middleware
     RouteHandler(app); // this function is handle all routes
     ErrorHandler(app); // this function is handle erros 
+    ConnectionHandler() // this function  is handle all the connection
     startSerevr(app); // this function is start server 
 };
 // ------------------------- this is main function hold all the function end ---------------------
@@ -33,6 +38,9 @@ export const Start = (app) => {
 // ------------------ this is express middlewares function start ----------------------------------
 function MiddlewareHandler(app) {
     app.set("trust proxy", true);
+    app.use(hpp())
+    app.use(helmet())
+    app.use(cookieParser())
     app.use(json({ limit: "10mb" }));
     app.use(urlencoded({ limit: "10mb", extended: true }));
     app.use(compression());
@@ -72,11 +80,19 @@ function ErrorHandler(app) {
 
 
 
+// -------------------------------- Connection Handler Function is Start here ------------------------------------
+function ConnectionHandler () {
+DbConnect()
+}
+// ----------------------------------- Connection handler Function is End here --------------------------
+
+
+
 // ----------------------------- here is the start function code start --------------------- 
 function startSerevr(app) {
     const server = http.createServer(app);
     server.listen(SERVER_PORT, () => {
-        logger.info(`server is up and running on port : ${SERVER_PORT} `)
+        logger.info(`server is up and running 🚀 on port : ${SERVER_PORT} `)
     })
 }
 // ----------------------------- here is the start function code end --------------------- 
