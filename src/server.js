@@ -58,7 +58,7 @@ function MiddlewareHandler(app) {
 function RouteHandler(app) {
     app.use("/health", (_req, res) => res.send("Server is running healthy and Ok"));
     app.use("/api/v1", MainRoutes);
-    app.use("/",(_req,_res,next)=> next(new BadRequestError("Path not found")));
+    app.use("/", (_req, _res, next) => next(new BadRequestError("Path not found")));
 }
 // ----------------- route handler middleware end here ------------------------------
 
@@ -81,8 +81,8 @@ function ErrorHandler(app) {
 
 
 // -------------------------------- Connection Handler Function is Start here ------------------------------------
-function ConnectionHandler () {
-DbConnect()
+function ConnectionHandler() {
+    DbConnect()
 }
 // ----------------------------------- Connection handler Function is End here --------------------------
 
