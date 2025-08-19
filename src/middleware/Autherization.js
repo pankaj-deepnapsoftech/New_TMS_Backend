@@ -5,7 +5,7 @@ import { VerifyToken } from "../utils/TokenHandler.js";
 
 
 export const Autherization = AsyncHandler(async (req,res,next) => {
-    const token = req.cookies.at || req.headers.authorization.split(" ")[1]
+    const token = req.cookies.at || req.headers.authorization?.split(" ")[1]
     
     const {id} = VerifyToken(token);
     const user = await FindById(id);

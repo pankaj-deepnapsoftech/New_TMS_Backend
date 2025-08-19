@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Verification</title>
+</head>
+<body style="margin:0; padding:0; background:#f5f7fb; font-family: 'Segoe UI', Tahoma, sans-serif; color:#333;">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td align="center" style="padding:40px 15px;">
+        
+        <!-- Card Container -->
+        <table width="600" border="0" cellspacing="0" cellpadding="0" style="background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1); overflow:hidden;">
+          
+          <!-- Header -->
+          <tr>
+            <td align="center" style="padding:30px 20px; background:#2563eb; color:#fff;">
+             
+              <h2 style="margin:0; font-size:22px; font-weight:600;">Deepnap Softech</h2>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:35px 30px; text-align:left;">
+              <h1 style="font-size:20px; margin:0 0 15px; color:#111;">Verify Your Email Address</h1>
+              
+              <p style="font-size:15px; margin:0 0 20px; line-height:1.6; color:#555;">
+                Hi <strong><%= userName || 'there' %></strong>,<br><br>
+                Thanks for signing up with Deepnap Softech! Please verify your email address by clicking the button below. 
+                This link will expire in 1 day.
+              </p>
+
+              <!-- CTA Button -->
+              <table border="0" cellspacing="0" cellpadding="0" align="center" style="margin:25px auto;">
+                <tr>
+                  <td align="center" bgcolor="#2563eb" style="border-radius:6px;">
+                    <a href="<%= verificationLink %>" target="_blank" style="display:inline-block; padding:14px 28px; font-size:16px; font-weight:600; color:#fff; text-decoration:none; border-radius:6px; background:#2563eb;">
+                      Verify Email
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="font-size:13px; margin:25px 0 0; color:#888; line-height:1.5;">
+                If the button doesn’t work, copy and paste this link into your browser:<br>
+                <a href="<%= verificationLink %>" style="color:#2563eb; text-decoration:underline; word-break:break-all;"><%= verificationLink %></a>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:20px 30px; background:#f9fafc; text-align:center; font-size:12px; color:#777;">
+              <p style="margin:0 0 8px;">Need help? Contact us at 
+                <a href="mailto:<%= supportEmail %>" style="color:#2563eb; text-decoration:none;">support@gmail.com</a>
+              </p>
+              <p style="margin:0;">&copy; <%= new Date().getFullYear() %> Deepnap Softech. All rights reserved.</p>
+            </td>
+          </tr>
+
+        </table>
+        <!-- End Card -->
+        
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

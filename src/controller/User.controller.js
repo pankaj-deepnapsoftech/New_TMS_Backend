@@ -3,7 +3,8 @@ import { StatusCodes } from "http-status-codes";
 
 // ------------------------------ local import here ---------------------------
 import { config } from "../config/env.config.js";
-import { CreateUserService,  FindByUsernameOrEmail, UpdateUser } from "../Services/User.services.js";
+import { SendMail } from "../helper/SendMain.js";
+import { CreateUserService, FindByUsernameOrEmail, UpdateUser } from "../Services/User.services.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { BadRequestError } from "../utils/CoustomError.js";
 import { SingToken } from "../utils/TokenHandler.js";
@@ -16,7 +17,10 @@ export const RegisterUser = AsyncHandler(async (req, res) => {
     if (exist) {
         throw new BadRequestError("user already exist", "user Regiteration Function");
     }
-    await CreateUserService(data);
+    const create = await CreateUserService(data);
+    const token = SingToken({ email: create.email, id: create._id }, "1day");
+    const verificationLink = `${config.NODE_ENV === "development" ? config.LOCAL_BACKEND_URL : config.BACKEND_URL}/user/verify?token=${token}`
+    SendMail("EmailVerification.ejs", { userName: create.username, verificationLink: verificationLink })
     return res.status(StatusCodes.CREATED).json({
         message: "User Created Successfully"
     });
@@ -30,7 +34,7 @@ export const Loginuser = AsyncHandler(async (req, res) => {
     const { username, password } = req.body;
 
 
-    const user = await FindByUsernameOrEmail(username,username);
+    const user = await FindByUsernameOrEmail(username, username);
 
     if (!user) {
         throw new BadRequestError("Bad Credintials", "Login user function")
@@ -72,14 +76,29 @@ export const Loginuser = AsyncHandler(async (req, res) => {
 
 
 // -------------------------- loged in user data get api start here  ------------------------------------
-export const  getLogedInUser =  AsyncHandler(async (req,res) => {
+export const getLogedInUser = AsyncHandler(async (req, res) => {
 
     return res.status(StatusCodes.OK).json({
-        user:req.currentUser
-    }) ;
+        user: req.currentUser
+    });
 })
 // --------------------------- loged in user date get api end here -------------------------------------
 
+
+
+// -------------------------- logout user api start here ---------------------------------
+export const logoutUser = AsyncHandler(async (req, res) => {
+    if (!req.currentUser) {
+        throw new BadRequestError("User not authenticate", "Logout user function")
+    }
+    res.clearCookie('at').clearCookie('rt').status(StatusCodes.OK).json({
+        message: "User logout successfully"
+    });
+
+    await UpdateUser(req.currentUser._id, { refresh_token: null })
+
+});
+// ----------------------------- login user api end here -------------------------------------
 
 
 
