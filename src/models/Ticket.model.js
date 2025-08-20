@@ -5,6 +5,7 @@ const TicketSchema = new Schema({
     title:{type:String,required:true},
     ticket_id:{type:String,required:true},
     due_date:{type:Date,required:true},
+    creator:{type:Schema.Types.ObjectId,ref:"User",required:true},
     priority:{type:String,required:true,default:"Medium",enum:["High","Low","Medium"]},
 },{timestamps:true});
 

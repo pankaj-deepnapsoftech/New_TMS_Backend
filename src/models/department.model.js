@@ -12,4 +12,3 @@ export const DepartmentModel = model("Department",departmentSchema);
 
 
 
-
