@@ -4,10 +4,10 @@ import { StatusCodes } from "http-status-codes";
 // ------------------------------ local import here ---------------------------
 import { config } from "../config/env.config.js";
 import { SendMail } from "../helper/SendMain.js";
-import { CreateUserService, FindByUsernameOrEmail, UpdateUser } from "../Services/User.services.js";
+import { CreateUserService, FindById, FindByUsernameOrEmail, UpdateUser } from "../Services/User.services.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { BadRequestError } from "../utils/CoustomError.js";
-import { SingToken } from "../utils/TokenHandler.js";
+import { SingToken, VerifyToken } from "../utils/TokenHandler.js";
 
 
 // --------------------------- user registeration code start here ------------------------------
@@ -101,6 +101,25 @@ export const logoutUser = AsyncHandler(async (req, res) => {
 // ----------------------------- login user api end here -------------------------------------
 
 
+
+// ------------------------------ Verify Email code start here ------------------------------------
+export const verifyEmail = AsyncHandler(async (req,res) =>{
+    const token = req.query;
+    if(!token){
+        throw new BadRequestError("Invalid Email","verifyEmail function");
+    }
+
+    const {id} = VerifyToken(token);
+    
+    const user = await FindById(id);
+
+    if(!user){
+        throw new BadRequestError("Invalid Token","verifyEmail function");
+    }
+
+    return res.redirect(config.NODE_ENV === "development" ? config.LOCAL_CLIENT_URL : config.CLIENT_URL); 
+});
+// ----------------------------------- Verify Email code end here ---------------------------------------
 
 
 

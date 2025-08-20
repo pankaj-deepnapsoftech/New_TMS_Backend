@@ -6,8 +6,8 @@ import { config } from "./env.config.js";
 export const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "me@gmail.com",
-    pass: config.GOOGLE_APP_PASSWORD,
+    user: config.EMAIL_ID,
+    pass: config.EMAIL_PASSWORD,
   },
 });
 
