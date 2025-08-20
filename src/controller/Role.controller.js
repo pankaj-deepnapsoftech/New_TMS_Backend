@@ -9,7 +9,7 @@ import { BadRequestError } from "../utils/CoustomError.js";
 // ------------------- Role Createion api start here ---------------------------
 export const CreateRole = AsyncHandler(async (req,res) => {
     const data = req.body;
-    const result = await CreateRoleService({data,creator:req?.currentUser?._id});
+    const result = await CreateRoleService({...data,creator:req?.currentUser?._id});
     return res.status(StatusCodes.CREATED).json({
         message:"Role Created Ssuccessfully",
         data:result
