@@ -22,11 +22,10 @@ export const CreateDepartment = AsyncHandler(async (req,res) => {
 // --------------------- department get api start here -----------------------------
 export const getDepartment = AsyncHandler(async (req,res) => {
     const {page,limit} = req.query;
-    const {creator} =  req.params;
     const pages = parseInt(page) || 1;
-    const limits = parseInt(creator) || 10;
+    const limits = parseInt(limit) || 10;
     const skip = (pages - 1) * limits;
-    const data = await GetDepartmentByCreator(creator,limit,skip);
+    const data = await GetDepartmentByCreator(limit,skip);
     return res.status(StatusCodes.OK).json({
         data
     });

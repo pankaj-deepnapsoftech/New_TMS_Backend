@@ -5,7 +5,7 @@ import { CreateDepartment, deleteDepartment, getDepartment, updateDepartment } f
 const routes = Router();
 
 routes.route("/create").post(CreateDepartment);
-routes.route("/get/:creator").get(getDepartment);
+routes.route("/get").get(getDepartment);
 routes.route("/update/:id").put(updateDepartment);
 routes.route("/delete/:id").delete(deleteDepartment);
 

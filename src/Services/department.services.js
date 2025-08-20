@@ -6,8 +6,8 @@ export const CreateDepartmentService = async (value) => {
     return data;
 };
 
-export const GetDepartmentByCreator = async(creator,limit,skip) => {
-    const data = await DepartmentModel.find({creator}).sort({_id:-1}).skip(skip).limit(limit).lean();
+export const GetDepartmentByCreator = async(limit,skip) => {
+    const data = await DepartmentModel.find({}).sort({_id:-1}).skip(skip).limit(limit).lean();
     return data;
 }
 
