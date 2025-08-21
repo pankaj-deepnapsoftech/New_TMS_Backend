@@ -1,4 +1,4 @@
-import { StatusHistoryModel } from "../models/StatusHistory.model"
+import { StatusHistoryModel } from "../models/StatusHistory.model.js"
 
 
 

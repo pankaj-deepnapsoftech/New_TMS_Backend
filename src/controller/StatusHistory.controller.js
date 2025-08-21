@@ -1,9 +1,9 @@
 import { StatusCodes } from "http-status-codes";
 
 // -------------------------- local imports here ---------------------------
-import { CreateStatusService, DeleteStatusService, GetStatusService, UpdateStatusService } from "../Services/StatusHistory.services";
+import { CreateStatusService, DeleteStatusService, GetStatusService, UpdateStatusService } from "../Services/StatusHistory.services.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
-import { BadRequestError } from "../utils/CoustomError";
+import { BadRequestError } from "../utils/CoustomError.js";
 
 
 
@@ -20,7 +20,6 @@ export const CreateStatus = AsyncHandler(async (req,res) => {
 
 
 
-
 // ------------------------------ Status get api start here ------------------------------
 export const GetStatus = AsyncHandler(async (req,res) => {
     const {task_id} = req.params;
@@ -30,7 +29,6 @@ export const GetStatus = AsyncHandler(async (req,res) => {
     });
 });
 // ------------------------------ Status get api end here ---------------------------------
-
 
 
 
