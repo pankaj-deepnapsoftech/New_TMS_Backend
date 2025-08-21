@@ -11,5 +11,4 @@ routes.route("/update/:id").put(UpdateStatus);
 routes.route("/delete/:id").delete(DeleteStatus);
 
 
-
 export default routes;
