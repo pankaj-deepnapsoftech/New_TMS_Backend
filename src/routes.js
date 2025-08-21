@@ -2,6 +2,7 @@ import { Router } from "express";
 
 // ------------------------ local imports here --------------------------
 import { Autherization } from "./middleware/Autherization.js";
+import CommentRoutes from "./routes/Comment.route.js"
 import DepartmentRoutes from "./routes/department.routes.js";
 import RoleRoutes from "./routes/roles.routes.js";
 import TaskRoutes from "./routes/task.routes.js";
@@ -16,6 +17,7 @@ routes.use("/department",Autherization,DepartmentRoutes);
 routes.use("/role",Autherization,RoleRoutes);
 routes.use("/ticket",Autherization,TicketRoutes);
 routes.use("/task",Autherization,TaskRoutes);
+routes.use("/comment",Autherization,CommentRoutes);
 
 
 
