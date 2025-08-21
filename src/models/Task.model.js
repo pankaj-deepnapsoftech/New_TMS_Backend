@@ -16,7 +16,8 @@ const TaskSchema = new Schema({
     isSchedule:{type:Boolean,required:true,default:false},
     schedule:schedule,
     assign:{type:Schema.Types.ObjectId,ref:"User"},
-    creator:{Type:Schema.Types.ObjectId,ref:"User"}
+    creator:{Type:Schema.Types.ObjectId,ref:"User"},
+    ticket_id:{Type:Schema.Types.ObjectId,ref:"Ticket"}
 });
 
 
