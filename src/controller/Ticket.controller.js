@@ -9,7 +9,7 @@ import { BadRequestError } from "../utils/CoustomError.js";
 // ------------------------------ ticket create api start here ------------------------
 export const CreateTicket = AsyncHandler(async (req,res) => {
     const data = req.body;
-    const result = await CreateTicketService(data);
+    const result = await CreateTicketService({...data,creator:req?.currentUser?._id});
     return res.status(StatusCodes.CREATED).json({
         message:"Ticket Created successfully",
         data:result

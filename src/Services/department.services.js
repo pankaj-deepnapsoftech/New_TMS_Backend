@@ -20,3 +20,10 @@ export const DeleteDepartmentService = async (id) => {
     const data = await DepartmentModel.findByIdAndDelete(id);
     return data;
 }
+
+export const DepartmentDataWithoutLimit = async () => {
+    const data = await DepartmentModel.find({}).select("name");
+    return data;
+}
+
+

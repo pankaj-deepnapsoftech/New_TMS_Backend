@@ -14,7 +14,7 @@ export const CreateRole = AsyncHandler(async (req,res) => {
         message:"Role Created Ssuccessfully",
         data:result
     })
-})
+});
 // ------------------ role creation api end here ---------------------------------
 
 
@@ -51,6 +51,7 @@ export const deleteRole = AsyncHandler(async (req,res) => {
 // -------------------------- role delete api end here -------------------------------
 
 
+
 // ---------------------------- role update api start here --------------------------------
 export const updateRole = AsyncHandler(async (req,res) => {
     const {id} =  req.params;
@@ -61,7 +62,7 @@ export const updateRole = AsyncHandler(async (req,res) => {
     }
 
     return res.status(StatusCodes.OK).json({
-        message:"Role Deleted Successfully",
+        message:"Update Role  Successfully",
         data 
     });
 });

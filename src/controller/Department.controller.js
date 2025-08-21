@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 
 // ---------------------- local imports here ----------------------------
-import { CreateDepartmentService, DeleteDepartmentService, GetDepartmentByCreator, updateDepartmentService } from "../Services/department.services.js";
+import { CreateDepartmentService, DeleteDepartmentService, DepartmentDataWithoutLimit, GetDepartmentByCreator, updateDepartmentService } from "../Services/department.services.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { BadRequestError } from "../utils/CoustomError.js";
 
@@ -60,7 +60,7 @@ export const updateDepartment = AsyncHandler(async (req,res) => {
     }
 
     return res.status(StatusCodes.OK).json({
-        message:"department Deleted Successfully",
+        message:"department Updated Successfully",
         data 
     });
 });
@@ -68,6 +68,15 @@ export const updateDepartment = AsyncHandler(async (req,res) => {
 
 
 
+// ----------------------------- Get All department  Api Start here ------------------------
+export const allDepartments = AsyncHandler(async(_req,res)=>{
+    const data = await DepartmentDataWithoutLimit();
+    return res.status(StatusCodes.OK).json({
+        message:"all departments",
+        data
+    })
+})
+// ---------------------------- Get All Department api end here ---------------------------
 
 
 
