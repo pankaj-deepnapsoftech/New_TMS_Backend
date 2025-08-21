@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 
 // ------------------------- local imports here -----------------------------------
-import { CreateCommentService, DeleteCommentService, GetCommentService, UpdateCommentServices } from "../Services/Comments.services";
+import { CreateCommentService, DeleteCommentService, GetCommentService, UpdateCommentServices } from "../Services/Comments.services.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { BadRequestError } from "../utils/CoustomError.js";
 
