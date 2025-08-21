@@ -22,7 +22,7 @@ export const DeleteDepartmentService = async (id) => {
 }
 
 export const DepartmentDataWithoutLimit = async () => {
-    const data = await DepartmentModel.find({}).select("name");
+    const data = await DepartmentModel.find({}).select("name").lean();
     return data;
 }
 

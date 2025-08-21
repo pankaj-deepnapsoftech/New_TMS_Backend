@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 
 // ---------------------- local imports here ----------------------------
-import { CreateRoleService, DeleteRolesService, GetRoleByCreator, updateRoleService } from "../Services/role.services.js";
+import { AllRolesService, CreateRoleService, DeleteRolesService, GetRoleByCreator, updateRoleService } from "../Services/role.services.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { BadRequestError } from "../utils/CoustomError.js";
 
@@ -68,6 +68,17 @@ export const updateRole = AsyncHandler(async (req,res) => {
 });
 // --------------------------- role update api end here ---------------------------
 
+
+
+// ------------------------------ get All role api start here --------------------------
+export const getAllRole =  AsyncHandler(async (req,res) => {
+    const data = await AllRolesService();
+    return res.status(StatusCodes.OK).json({
+        message:"all roles",
+        data
+    })
+});
+// -------------------------------get all role api end here -----------------------------
 
 
 

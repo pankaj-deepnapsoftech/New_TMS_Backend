@@ -20,3 +20,12 @@ export const DeleteRolesService = async (id) => {
     const data = await RoleModel.findByIdAndDelete(id);
     return data;
 }
+
+export const AllRolesService = async () => {
+    const data = await RoleModel.find({}).select("role").lean();
+    return data;
+}
+
+
+
+
