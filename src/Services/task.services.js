@@ -17,7 +17,10 @@ export const DeleteTaskService = async (id) => {
     return result;
 }
 
-
+export const DeleteManyTasks = async (id) => {
+    const result = await TaskModel.deleteMany({ticket_id:id});
+    return result;
+};
 
 
 

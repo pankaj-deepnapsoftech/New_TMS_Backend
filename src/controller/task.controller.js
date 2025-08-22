@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 
 // -------------------------- local imports here ------------------
-import { CreateStatusService } from "../Services/StatusHistory.services.js";
+import { CreateStatusService, DeleteManyStatusService } from "../Services/StatusHistory.services.js";
 import { CreateTaskServices, DeleteTaskService, updateTaskService } from "../Services/task.services.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { BadRequestError } from "../utils/CoustomError.js";
@@ -28,10 +28,12 @@ export const DeleteTask = AsyncHandler(async (req,res) => {
     if(!data){
         throw new BadRequestError("Task already Deleted","DeleteTask function")
     }
-    return res.status(StatusCodes.OK).json({
+     res.status(StatusCodes.OK).json({
         message:"Task deleted Successfully",
         data
     });
+   
+    await DeleteManyStatusService(data._id)
 });
 // -------------------------------- task Delete api end here -----------------------------
 

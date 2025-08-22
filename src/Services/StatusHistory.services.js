@@ -19,6 +19,11 @@ export const UpdateStatusService = async(id,data) => {
 }
 
 
+export const DeleteManyStatusService = async (id) => {
+    const result = await StatusHistoryModel.deleteMany({$or:[{task_id:id},{ticket_id:id}]});
+    return result;
+}
+
 
 
 
