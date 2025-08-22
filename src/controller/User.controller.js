@@ -103,33 +103,33 @@ export const logoutUser = AsyncHandler(async (req, res) => {
 
 
 // ------------------------------ Verify Email code start here ------------------------------------
-export const verifyEmail = AsyncHandler(async (req,res) =>{
+export const verifyEmail = AsyncHandler(async (req, res) => {
     const token = req.query;
-    if(!token){
-        throw new BadRequestError("Invalid Email","verifyEmail function");
+    if (!token) {
+        throw new BadRequestError("Invalid Email", "verifyEmail function");
     }
 
-    const {id} = VerifyToken(token);
-    
+    const { id } = VerifyToken(token);
+
     const user = await FindById(id);
 
-    if(!user){
-        throw new BadRequestError("Invalid Token","verifyEmail function");
+    if (!user) {
+        throw new BadRequestError("Invalid Token", "verifyEmail function");
     }
 
-    return res.redirect(config.NODE_ENV === "development" ? config.LOCAL_CLIENT_URL : config.CLIENT_URL); 
+    return res.redirect(config.NODE_ENV === "development" ? config.LOCAL_CLIENT_URL : config.CLIENT_URL);
 });
 // ----------------------------------- Verify Email code end here ---------------------------------------
 
 
 
 // --------------------------------- AllUser data api start here --------------------------
-export const AllUsers = AsyncHandler(async (req,res) => {
-    const {page,limit} = req.query;
+export const AllUsers = AsyncHandler(async (req, res) => {
+    const { page, limit } = req.query;
     const pages = parseInt(page) || 1;
     const limits = parseInt(limit) || 10;
     const skip = (pages - 1) * limits
-    const data = await FindAllUsers(skip,limits);
+    const data = await FindAllUsers(skip, limits);
     return res.status(StatusCodes.OK).json({
         data
     });
@@ -137,8 +137,20 @@ export const AllUsers = AsyncHandler(async (req,res) => {
 // -------------------------------- AllUser data api end here ------------------------------
 
 
-
-
+// -------------------------------- user update api start here ----------------------------
+export const updateUserData = AsyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const data = req.body;
+    const result = await UpdateUser(id, data);
+    if (!result) {
+        throw new BadRequestError("User not found", "updateUserData function")
+    }
+    return res.status(StatusCodes.OK).json({
+        message:"User updated Successfully",
+        data:result
+    });
+});
+// ------------------------------ user update api end here -------------------------------
 
 
 
