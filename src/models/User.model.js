@@ -11,6 +11,7 @@ const UserSchema = new Schema({
     role: { type: Schema.Types.ObjectId, ref: "Role" },
     department: { type: Schema.Types.ObjectId, ref: "Department" },
     verification: { type: Boolean, required: true, default: false },
+    admin:{type:Boolean,required:true,default:false},
     refresh_token: { type: String }
 }, { timestamps: true });
 

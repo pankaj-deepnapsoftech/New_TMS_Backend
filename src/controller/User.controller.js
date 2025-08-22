@@ -4,7 +4,7 @@ import { StatusCodes } from "http-status-codes";
 // ------------------------------ local import here ---------------------------
 import { config } from "../config/env.config.js";
 import { SendMail } from "../helper/SendMain.js";
-import { CreateUserService, FindById, FindByUsernameOrEmail, UpdateUser } from "../Services/User.services.js";
+import { CreateUserService, FindAllUsers, FindById, FindByUsernameOrEmail, UpdateUser } from "../Services/User.services.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { BadRequestError } from "../utils/CoustomError.js";
 import { SingToken, VerifyToken } from "../utils/TokenHandler.js";
@@ -120,6 +120,33 @@ export const verifyEmail = AsyncHandler(async (req,res) =>{
     return res.redirect(config.NODE_ENV === "development" ? config.LOCAL_CLIENT_URL : config.CLIENT_URL); 
 });
 // ----------------------------------- Verify Email code end here ---------------------------------------
+
+
+
+// --------------------------------- AllUser data api start here --------------------------
+export const AllUsers = AsyncHandler(async (req,res) => {
+    const {page,limit} = req.query;
+    const pages = parseInt(page) || 1;
+    const limits = parseInt(limit) || 10;
+    const skip = (pages - 1) * limits
+    const data = await FindAllUsers(skip,limits);
+    return res.status(StatusCodes.OK).json({
+        data
+    });
+});
+// -------------------------------- AllUser data api end here ------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

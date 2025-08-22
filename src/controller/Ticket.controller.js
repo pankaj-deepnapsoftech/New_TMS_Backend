@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 
 // ----------------------------- local import here -----------------------
+import { CreateStatusService } from "../Services/StatusHistory.services.js";
 import { CreateTicketService, DeleteTicketService, GetTicketServiceByCreator, UpdateTicketService } from "../Services/Ticket.services.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { BadRequestError } from "../utils/CoustomError.js";
@@ -10,10 +11,11 @@ import { BadRequestError } from "../utils/CoustomError.js";
 export const CreateTicket = AsyncHandler(async (req,res) => {
     const data = req.body;
     const result = await CreateTicketService({...data,creator:req?.currentUser?._id});
-    return res.status(StatusCodes.CREATED).json({
+    res.status(StatusCodes.CREATED).json({
         message:"Ticket Created successfully",
         data:result
-    })
+    });
+    await CreateStatusService({ticket_id:result._id});
 });
 // ----------------------------- ticket create api end here -------------------------------
 
