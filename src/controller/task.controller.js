@@ -2,7 +2,7 @@ import { StatusCodes } from "http-status-codes";
 
 // -------------------------- local imports here ------------------
 import { CreateStatusService } from "../Services/StatusHistory.services.js";
-import { CreateTaskServices, DeleteTaskService, getTaskService, updateTaskService } from "../Services/task.services.js";
+import { CreateTaskServices, DeleteTaskService, updateTaskService } from "../Services/task.services.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { BadRequestError } from "../utils/CoustomError.js";
 
@@ -18,19 +18,6 @@ export const CreateTask = AsyncHandler(async(req,res) => {
     await CreateStatusService({task_id:result._id});
 });
 // ----------------------------- task Create api end here -------------------------------
-
-
-
-// ------------------------------ task get api state here --------------------------------
-export const getTask = AsyncHandler(async (req,res) => {
-    const {ticket} = req.params;
-    const data = await getTaskService(ticket,req?.currentUser?._id);
-    return res.status(StatusCodes.OK).json({
-        messageL:"task",
-        data
-    });
-});
-// ------------------------------- task get api end here --------------------------------
 
 
 

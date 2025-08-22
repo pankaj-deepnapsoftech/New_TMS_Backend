@@ -5,11 +5,6 @@ export const CreateTaskServices = async (data) => {
     return result;
 };
 
-export const getTaskService = async (ticket_id,access) => {
-    const result = await TaskModel.find({ticket_id,$or:[{creator:access},{assign:access}]}).lean();
-    return result;
-};
-
 
 export const updateTaskService = async (id,data) => {
     const result = await TaskModel.findByIdAndUpdate(id,data,{new:true,lean:true});

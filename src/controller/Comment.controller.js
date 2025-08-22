@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 
 // ------------------------- local imports here -----------------------------------
-import { CreateCommentService, DeleteCommentService, GetCommentService, UpdateCommentServices } from "../Services/Comments.services.js";
+import { CreateCommentService, DeleteCommentService, UpdateCommentServices } from "../Services/Comments.services.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { BadRequestError } from "../utils/CoustomError.js";
 
@@ -17,21 +17,6 @@ export const CreateComment = AsyncHandler(async (req,res) => {
     });
 });
 // ------------------------------- Comment create api end here ---------------------------
-
-
-
-// -------------------------------- Comment get api start here -----------------------------
-export const GetComment =  AsyncHandler(async (req,res) => {
-    const {page,limit,task} = req.query;
-    const pages = parseInt(page) || 1;
-    const limits = parseInt(limit) || 20;
-    const skip = (pages -1 ) * limits;
-    const result = await GetCommentService(task,task,skip,limits); 
-    return res.status(StatusCodes.ACCEPTED).json({
-        data:result
-    });
-});
-// --------------------------------- Comment get api end here ----------------------------
 
 
 

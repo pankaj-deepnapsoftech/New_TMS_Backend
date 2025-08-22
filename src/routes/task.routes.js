@@ -1,13 +1,12 @@
 import { Router } from "express";
 
 // ------------------------- local imports here ---------------------------------------
-import { CreateTask, DeleteTask, getTask, UpdateTask } from "../controller/task.controller.js";
+import { CreateTask, DeleteTask, UpdateTask } from "../controller/task.controller.js";
 
 
 const routes = Router();
 
 routes.route("/create").post(CreateTask);
-routes.route("/get").get(getTask);
 routes.route("/delete/:id").delete(DeleteTask);
 routes.route("/update/:id").put(UpdateTask);
 
