@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 
 // -------------------------- local imports here ------------------
+import { CreateStatusService } from "../Services/StatusHistory.services.js";
 import { CreateTaskServices, DeleteTaskService, getTaskService, updateTaskService } from "../Services/task.services.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { BadRequestError } from "../utils/CoustomError.js";
@@ -9,11 +10,12 @@ import { BadRequestError } from "../utils/CoustomError.js";
 // ----------------------------- Task Create api start here ----------------------------
 export const CreateTask = AsyncHandler(async(req,res) => {
     const data = req.body;
-    const result = await CreateTaskServices({...data,creator:req.currentUser?._id});
-    return res.status(StatusCodes.CREATED).json({
+    const result = await CreateTaskServices({...data,creator:req?.currentUser?._id});
+    res.status(StatusCodes.CREATED).json({
         message:"task created successful",
         data:result
     });
+    await CreateStatusService({task_id:result._id});
 });
 // ----------------------------- task Create api end here -------------------------------
 

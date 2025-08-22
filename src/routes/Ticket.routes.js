@@ -8,7 +8,7 @@ const routes = Router();
 
 
 routes.route("/create").post(CreateTicket);
-routes.route("/get/:creator").get(getTicket);
+routes.route("/get").get(getTicket);
 routes.route("/update/:id").put(UpdateTicket);
 routes.route("/delete/:id").delete(DeleteTicket);
 

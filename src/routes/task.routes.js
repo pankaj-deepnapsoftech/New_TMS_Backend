@@ -7,7 +7,7 @@ import { CreateTask, DeleteTask, getTask, UpdateTask } from "../controller/task.
 const routes = Router();
 
 routes.route("/create").post(CreateTask);
-routes.route("/get/:ticket").get(getTask);
+routes.route("/get").get(getTask);
 routes.route("/delete/:id").delete(DeleteTask);
 routes.route("/update/:id").put(UpdateTask);
 

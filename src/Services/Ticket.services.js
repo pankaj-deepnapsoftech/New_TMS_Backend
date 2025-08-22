@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 import { TicketModel } from "../models/Ticket.model.js"
 
 
@@ -7,13 +9,44 @@ export const CreateTicketService = async (data) => {
     return result;
 };
 
-export const GetTicketServiceByCreator = async (creator,limit,skip) => {
-    const result = await TicketModel.find({creator}).sort({_id:-1}).skip(skip).limit(limit).lean();
+export const GetTicketServiceByCreator = async (isAdmin,creator, limit, skip) => {
+    const matches = isAdmin ? {} : { creator: new mongoose.Types.ObjectId(creator) }
+    const result = await TicketModel.aggregate([
+        {
+            $match: {...matches}
+        },
+        {
+            $lookup: {
+                from: "tasks",
+                localField: "_id",
+                foreignField: "ticket_id",
+                as: "task",
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: "statushistories",
+                            localField: "_id",
+                            foreignField: "task_id",
+                            as: "status"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $lookup: {
+                from: "statushistories",
+                localField: "_id",
+                foreignField: "ticket_id",
+                as: "status"
+            }
+        }
+    ]).sort({ _id: -1 }).skip(skip).limit(limit);
     return result;
 };
 
-export const UpdateTicketService =  async (id,data) => {
-    const result = await TicketModel.findByIdAndUpdate(id,data,{new:true,lean:true});
+export const UpdateTicketService = async (id, data) => {
+    const result = await TicketModel.findByIdAndUpdate(id, data, { new: true, lean: true });
     return result;
 };
 

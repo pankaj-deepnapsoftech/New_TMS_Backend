@@ -23,12 +23,11 @@ export const CreateTicket = AsyncHandler(async (req,res) => {
 
 // ------------------------------ ticket get api Start here ------------------------------
 export const getTicket = AsyncHandler(async (req,res)=>{
-    const {creator} = req.params;
     const {limit,page} = req.query;
     const pages = parseInt(page) || 1;
     const limits = parseInt(limit) || 10;
     const skip = (pages -1 ) * limits
-    const data = await GetTicketServiceByCreator(creator,limits,skip);
+    const data = await GetTicketServiceByCreator(req?.currentUser?.admin,req?.currentUser?._id,limits,skip);
     return res.status(StatusCodes.OK).json({
         data
     });
