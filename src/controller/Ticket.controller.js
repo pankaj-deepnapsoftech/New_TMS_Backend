@@ -2,7 +2,7 @@ import { StatusCodes } from "http-status-codes";
 
 // ----------------------------- local import here -----------------------
 import { CreateStatusService } from "../Services/StatusHistory.services.js";
-import { CreateTicketService, DeleteTicketService, GetTicketServiceByCreator, UpdateTicketService } from "../Services/Ticket.services.js";
+import { CreateTicketService, DeleteTicketService, GetTicketServiceByAssign, GetTicketServiceByCreator, UpdateTicketService } from "../Services/Ticket.services.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { BadRequestError } from "../utils/CoustomError.js";
 
@@ -23,11 +23,13 @@ export const CreateTicket = AsyncHandler(async (req,res) => {
 
 // ------------------------------ ticket get api Start here ------------------------------
 export const getTicket = AsyncHandler(async (req,res)=>{
+    // eslint-disable-next-line no-unsafe-optional-chaining
+    const {admin,_id:id} = req?.currentUser ;
     const {limit,page} = req.query;
     const pages = parseInt(page) || 1;
     const limits = parseInt(limit) || 10;
     const skip = (pages -1 ) * limits
-    const data = await GetTicketServiceByCreator(req?.currentUser?.admin,req?.currentUser?._id,limits,skip);
+    const data = await GetTicketServiceByCreator(admin,id,limits,skip);
     return res.status(StatusCodes.OK).json({
         data
     });
@@ -65,8 +67,25 @@ export const UpdateTicket =  AsyncHandler(async (req,res) => {
         data:result
     })
 });
+// ------------------------------- ticket updaet api end here ----------------------------
 
 
+
+
+// ------------------------------ ticket get api by assign start here ----------------------
+export const getTicketbyAssign = AsyncHandler(async (req,res)=>{
+    // eslint-disable-next-line no-unsafe-optional-chaining
+    const {_id:id} = req?.currentUser ;
+    const {limit,page} = req.query;
+    const pages = parseInt(page) || 1;
+    const limits = parseInt(limit) || 10;
+    const skip = (pages -1 ) * limits
+    const data = await GetTicketServiceByAssign(id,limits,skip);
+    return res.status(StatusCodes.OK).json({
+        data
+    });
+});
+// --------------------------- ticket get api by assignj end here --------------------------
 
 
 

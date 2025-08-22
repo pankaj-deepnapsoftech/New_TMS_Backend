@@ -6,7 +6,7 @@ const StatusHistory = new Schema({
     updatedBy:{type:Schema.Types.ObjectId,ref:"User"},
     task_id:{type:Schema.Types.ObjectId,ref:"Task"},
     ticket_id:{type:Schema.Types.ObjectId,ref:"Ticket"}
-});
+},{timestamps:true});
 
 
 export const StatusHistoryModel = model("StatusHistory",StatusHistory);

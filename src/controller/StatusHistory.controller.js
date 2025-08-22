@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 
 // -------------------------- local imports here ---------------------------
-import { CreateStatusService, DeleteStatusService, GetStatusService, UpdateStatusService } from "../Services/StatusHistory.services.js";
+import { CreateStatusService, DeleteStatusService, UpdateStatusService } from "../Services/StatusHistory.services.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { BadRequestError } from "../utils/CoustomError.js";
 
@@ -18,17 +18,6 @@ export const CreateStatus = AsyncHandler(async (req,res) => {
 });
 // ------------------------------- Status created api end here ----------------------------
 
-
-
-// ------------------------------ Status get api start here ------------------------------
-export const GetStatus = AsyncHandler(async (req,res) => {
-    const {task_id} = req.params;
-    const data = await GetStatusService(task_id,task_id);
-    return res.status(StatusCodes.OK).json({
-        data
-    });
-});
-// ------------------------------ Status get api end here ---------------------------------
 
 
 
@@ -52,7 +41,7 @@ export const DeleteStatus =  AsyncHandler(async (req,res) => {
 export const UpdateStatus = AsyncHandler(async (req,res) => {
     const {id} = req.params;
     const data = req.body;
-    const result = await UpdateStatusService(id,data);
+    const result = await UpdateStatusService(id,{...data,updatedBy:req?.currentUser?._id});
     if(!result){
         throw new BadRequestError("Status Data Not Found","UpdateStatus function")
     };
