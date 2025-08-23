@@ -39,7 +39,7 @@ export const UpdateUser = async (id,value) => {
 
 
 export const FindAllUsers = async(skip,limit) => {
-    const data = await UserModel.find({admin:{$exists:false}}).select("-password -refresh_token -admin").populate([{path:"role"},{path:"department"}]).skip(skip).limit(limit).lean();
+    const data = await UserModel.find({admin:false}).select("-password -refresh_token -admin").populate([{path:"role"},{path:"department"}]).skip(skip).limit(limit).lean();
     return data;
 }
 

@@ -8,7 +8,8 @@
     "start": "node src/index.js",
     "production": "pm2 start src/index.js --name New-TMS-Backend",
     "lint": "eslint . --fix",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "stop":"pm2 stop src/"
   },
   "keywords": [],
   "author": "",

@@ -14,13 +14,14 @@ import { StatusCodes } from "http-status-codes";
 
 import { config } from "./config/env.config.js";
 import { DbConnect } from "./connections/dbConnection.js";
+import { HealthPage } from "./helper/health.js";
 import MainRoutes from "./routes.js";
 import { BadRequestError } from "./utils/CoustomError.js";
 import getLogger from "./utils/logger.js";
 
 const logger = getLogger('Server.js file');
 
-const SERVER_PORT = 5001;
+const SERVER_PORT = 8093;
 
 
 // ------------------------- this is main function hold all the function start ---------------------
@@ -56,7 +57,7 @@ function MiddlewareHandler(app) {
 
 // ----------------- route handler middleware start here ------------------------------
 function RouteHandler(app) {
-    app.use("/health", (_req, res) => res.send("Server is running healthy and Ok"));
+    app.use("/health", HealthPage);
     app.use("/api/v1", MainRoutes);
     app.use("/", (_req, _res, next) => next(new BadRequestError("Path not found")));
 }
