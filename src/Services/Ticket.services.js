@@ -38,6 +38,43 @@ export const GetTicketServiceByCreator = async (isAdmin, creator, limit, skip) =
                             as: "comment"
                         }
                     },
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "creator",
+                            foreignField: "_id",
+                            as: "creator",
+                            pipeline: [
+                                {
+                                    $project: {
+                                        username: 1,
+                                        full_name: 1,
+                                        email: 1
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "assign",
+                            foreignField: "_id",
+                            as: "assign",
+                            pipeline: [
+                                {
+                                    $project: {
+                                        username: 1,
+                                        full_name: 1,
+                                        email: 1
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    { $unwind: { path: "$assign", preserveNullAndEmptyArrays: true } },
+                    { $unwind: { path: "$creator", preserveNullAndEmptyArrays: true } }
+
                 ]
             }
         },
@@ -57,6 +94,17 @@ export const GetTicketServiceByCreator = async (isAdmin, creator, limit, skip) =
                 as: "comment"
             }
         },
+        {
+            $lookup: {
+                from: "departments",
+                localField: "department",
+                foreignField: "_id",
+                as: "department"
+            }
+        },
+        {
+            $unwind: "$department"
+        }
     ]).sort({ _id: -1 }).skip(skip).limit(limit);
     return result;
 };
@@ -80,7 +128,52 @@ export const GetTicketServiceByAssign = async (creator, limit, skip) => {
                             foreignField: "task_id",
                             as: "status"
                         }
-                    }
+                    },
+                    {
+                        $lookup: {
+                            from: "comments",
+                            localField: "_id",
+                            foreignField: "task_id",
+                            as: "comment"
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "creator",
+                            foreignField: "_id",
+                            as: "creator",
+                            pipeline: [
+                                {
+                                    $project: {
+                                        username: 1,
+                                        full_name: 1,
+                                        email: 1
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "assign",
+                            foreignField: "_id",
+                            as: "assign",
+                            pipeline: [
+                                {
+                                    $project: {
+                                        username: 1,
+                                        full_name: 1,
+                                        email: 1
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    { $unwind: { path: "$assign", preserveNullAndEmptyArrays: true } },
+                    { $unwind: { path: "$creator", preserveNullAndEmptyArrays: true } }
+
                 ]
             }
         },
@@ -92,11 +185,29 @@ export const GetTicketServiceByAssign = async (creator, limit, skip) => {
                 as: "status"
             }
         },
+        {
+            $lookup: {
+                from: "comments",
+                localField: "_id",
+                foreignField: "ticket_id",
+                as: "comment"
+            }
+        },
+        {
+            $lookup: {
+                from: "departments",
+                localField: "department",
+                foreignField: "_id",
+                as: "department"
+            }
+        },
+        {
+            $unwind: "$department"
+        },
         { $match: { task: { $ne: [] } } }
     ]).sort({ _id: -1 }).skip(skip).limit(limit);
     return result;
 };
-
 
 export const UpdateTicketService = async (id, data) => {
     const result = await TicketModel.findByIdAndUpdate(id, data, { new: true, lean: true });
