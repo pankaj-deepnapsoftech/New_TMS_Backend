@@ -9,11 +9,11 @@ export const CreateTicketService = async (data) => {
     return result;
 };
 
-export const GetTicketServiceByCreator = async (isAdmin,creator, limit, skip) => {
+export const GetTicketServiceByCreator = async (isAdmin, creator, limit, skip) => {
     const matches = isAdmin ? {} : { creator: new mongoose.Types.ObjectId(creator) };
     const result = await TicketModel.aggregate([
         {
-            $match: {...matches}
+            $match: { ...matches }
         },
         {
             $lookup: {
@@ -29,7 +29,15 @@ export const GetTicketServiceByCreator = async (isAdmin,creator, limit, skip) =>
                             foreignField: "task_id",
                             as: "status"
                         }
-                    }
+                    },
+                    {
+                        $lookup: {
+                            from: "comments",
+                            localField: "_id",
+                            foreignField: "task_id",
+                            as: "comment"
+                        }
+                    },
                 ]
             }
         },
@@ -39,6 +47,14 @@ export const GetTicketServiceByCreator = async (isAdmin,creator, limit, skip) =>
                 localField: "_id",
                 foreignField: "ticket_id",
                 as: "status"
+            }
+        },
+        {
+            $lookup: {
+                from: "comments",
+                localField: "_id",
+                foreignField: "ticket_id",
+                as: "comment"
             }
         },
     ]).sort({ _id: -1 }).skip(skip).limit(limit);
@@ -55,7 +71,7 @@ export const GetTicketServiceByAssign = async (creator, limit, skip) => {
                 as: "task",
                 pipeline: [
                     {
-                        $match:{assign: new mongoose.Types.ObjectId(creator)}
+                        $match: { assign: new mongoose.Types.ObjectId(creator) }
                     },
                     {
                         $lookup: {
@@ -76,7 +92,7 @@ export const GetTicketServiceByAssign = async (creator, limit, skip) => {
                 as: "status"
             }
         },
-       { $match: { task: { $ne: [] } } }
+        { $match: { task: { $ne: [] } } }
     ]).sort({ _id: -1 }).skip(skip).limit(limit);
     return result;
 };

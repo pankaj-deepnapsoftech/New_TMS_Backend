@@ -15,7 +15,6 @@ export const UpdateRenualService = async (id,data) => {
     return result;
 };
 
-
 export const DeleteRenualService  = async (id) => {
     const result = await RenualModel.findByIdAndDelete(id);
     return result;
