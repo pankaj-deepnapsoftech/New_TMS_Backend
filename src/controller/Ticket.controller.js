@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 
 // ----------------------------- local import here -----------------------
+import { DeleteManyComments } from "../Services/Comments.services.js";
 import { CreateStatusService, DeleteManyStatusService } from "../Services/StatusHistory.services.js";
 import { DeleteManyTasks } from "../Services/task.services.js";
 import { CreateTicketService, DeleteTicketService, GetTicketServiceByAssign, GetTicketServiceByCreator, UpdateTicketService } from "../Services/Ticket.services.js";
@@ -53,6 +54,7 @@ export const DeleteTicket = AsyncHandler(async (req, res) => {
     })
     await DeleteManyTasks(data._id);
     await DeleteManyStatusService(data._id);
+    await DeleteManyComments(data._id)
 });
 //------------------------------- ticket delete api end here ---------------------------------
 
