@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes";
 // ------------------------------- local imports here ----------------------------------
 import { CreateRenualServices, DeleteRenualService, GetRenualServices, UpdateRenualService } from "../Services/Renuals.services.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
-import { BadRequestError } from "../utils/CoustomError";
+import { BadRequestError } from "../utils/CoustomError.js";
 
 
 // -------------------------------- create Renual api code start here ------------------------

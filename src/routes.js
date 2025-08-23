@@ -4,6 +4,7 @@ import { Router } from "express";
 import { Autherization } from "./middleware/Autherization.js";
 import CommentRoutes from "./routes/Comment.route.js"
 import DepartmentRoutes from "./routes/department.routes.js";
+import RenualRoutes from "./routes/Renuals.route.js";
 import RoleRoutes from "./routes/roles.routes.js";
 import StatusRoutes from "./routes/status.routes.js"
 import TaskRoutes from "./routes/task.routes.js";
@@ -13,6 +14,7 @@ import UserRoute from "./routes/user.routes.js";
 
 const routes = Router();
 
+
 routes.use("/user",UserRoute);
 routes.use("/department",Autherization,DepartmentRoutes);
 routes.use("/role",Autherization,RoleRoutes);
@@ -20,6 +22,7 @@ routes.use("/ticket",Autherization,TicketRoutes);
 routes.use("/task",Autherization,TaskRoutes);
 routes.use("/comment",Autherization,CommentRoutes);
 routes.use("/status",Autherization,StatusRoutes);
+routes.use("/renuals",Autherization,RenualRoutes);
 
 
 
