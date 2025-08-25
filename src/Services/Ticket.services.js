@@ -222,9 +222,9 @@ export const DeleteTicketService = async (id) => {
 
 
 export const GetSingleTicketByTicketId = async (id) => {
-  const result = await TicketModel.aggregate([
+    const result = await TicketModel.aggregate([
         {
-            $match: { ticket_id:id }
+            $match: { ticket_id: id }
         },
         {
             $lookup: {
@@ -283,6 +283,7 @@ export const GetSingleTicketByTicketId = async (id) => {
                             ]
                         }
                     },
+
                     { $unwind: { path: "$assign", preserveNullAndEmptyArrays: true } },
                     { $unwind: { path: "$creator", preserveNullAndEmptyArrays: true } }
 
@@ -314,8 +315,24 @@ export const GetSingleTicketByTicketId = async (id) => {
             }
         },
         {
-            $unwind: "$department"
-        }
+            $lookup: {
+                from: "users",
+                localField: "creator",
+                foreignField: "_id",
+                as: "creator",
+                pipeline: [
+                    {
+                        $project: {
+                            username: 1,
+                            full_name: 1,
+                            email: 1
+                        }
+                    }
+                ]
+            }
+        },
+        { $unwind: "$department" },
+        { $unwind: "$creator" },
     ]);
     return result[0];
 }
