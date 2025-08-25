@@ -219,8 +219,6 @@ export const DeleteTicketService = async (id) => {
     return result;
 };
 
-
-
 export const GetSingleTicketByTicketId = async (id) => {
     const result = await TicketModel.aggregate([
         {
