@@ -4,6 +4,7 @@ import { Router } from "express";
 import { Autherization } from "./middleware/Autherization.js";
 import CommentRoutes from "./routes/Comment.route.js"
 import DepartmentRoutes from "./routes/department.routes.js";
+import ImpDocsRoutes from "./routes/importantDocs.route.js";
 import RenualRoutes from "./routes/Renuals.route.js";
 import RoleRoutes from "./routes/roles.routes.js";
 import StatusRoutes from "./routes/status.routes.js"
@@ -23,6 +24,7 @@ routes.use("/task",Autherization,TaskRoutes);
 routes.use("/comment",Autherization,CommentRoutes);
 routes.use("/status",Autherization,StatusRoutes);
 routes.use("/renuals",Autherization,RenualRoutes);
+routes.use("/imp-docs",Autherization,ImpDocsRoutes);
 
 
 
