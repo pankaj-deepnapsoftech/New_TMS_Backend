@@ -11,9 +11,10 @@ export const CreateTicketService = async (data) => {
 
 export const GetTicketServiceByCreator = async (isAdmin, creator, limit, skip) => {
     const matches = isAdmin ? {} : { creator: new mongoose.Types.ObjectId(creator) };
+    console.log(matches);
     const result = await TicketModel.aggregate([
         {
-            $match: { ...matches }
+            $match: matches 
         },
         {
             $lookup: {
