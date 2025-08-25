@@ -221,7 +221,104 @@ export const DeleteTicketService = async (id) => {
 
 
 
+export const GetSingleTicketByTicketId = async (id) => {
+  const result = await TicketModel.aggregate([
+        {
+            $match: { ticket_id:id }
+        },
+        {
+            $lookup: {
+                from: "tasks",
+                localField: "_id",
+                foreignField: "ticket_id",
+                as: "task",
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: "statushistories",
+                            localField: "_id",
+                            foreignField: "task_id",
+                            as: "status"
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "comments",
+                            localField: "_id",
+                            foreignField: "task_id",
+                            as: "comment"
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "creator",
+                            foreignField: "_id",
+                            as: "creator",
+                            pipeline: [
+                                {
+                                    $project: {
+                                        username: 1,
+                                        full_name: 1,
+                                        email: 1
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "assign",
+                            foreignField: "_id",
+                            as: "assign",
+                            pipeline: [
+                                {
+                                    $project: {
+                                        username: 1,
+                                        full_name: 1,
+                                        email: 1
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    { $unwind: { path: "$assign", preserveNullAndEmptyArrays: true } },
+                    { $unwind: { path: "$creator", preserveNullAndEmptyArrays: true } }
 
+                ]
+            }
+        },
+        {
+            $lookup: {
+                from: "statushistories",
+                localField: "_id",
+                foreignField: "ticket_id",
+                as: "status"
+            }
+        },
+        {
+            $lookup: {
+                from: "comments",
+                localField: "_id",
+                foreignField: "ticket_id",
+                as: "comment"
+            }
+        },
+        {
+            $lookup: {
+                from: "departments",
+                localField: "department",
+                foreignField: "_id",
+                as: "department"
+            }
+        },
+        {
+            $unwind: "$department"
+        }
+    ]);
+    return result[0];
+}
 
 
 

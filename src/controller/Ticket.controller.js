@@ -4,7 +4,7 @@ import { StatusCodes } from "http-status-codes";
 import { DeleteManyComments } from "../Services/Comments.services.js";
 import { CreateStatusService, DeleteManyStatusService } from "../Services/StatusHistory.services.js";
 import { DeleteManyTasks } from "../Services/task.services.js";
-import { CreateTicketService, DeleteTicketService, GetTicketServiceByAssign, GetTicketServiceByCreator, UpdateTicketService } from "../Services/Ticket.services.js";
+import { CreateTicketService, DeleteTicketService, GetSingleTicketByTicketId, GetTicketServiceByAssign, GetTicketServiceByCreator, UpdateTicketService } from "../Services/Ticket.services.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { BadRequestError } from "../utils/CoustomError.js";
 
@@ -92,6 +92,16 @@ export const getTicketbyAssign = AsyncHandler(async (req, res) => {
 });
 // --------------------------- ticket get api by assignj end here --------------------------
 
+
+
+// ----------------------------- get Single Ticket data By Ticket id  ---------------------------
+export const getSingleTicket = AsyncHandler(async (req,res) => {
+    const {id} = req.params;
+    const data = await GetSingleTicketByTicketId(id);
+    return res.status(StatusCodes.OK).json({
+        data
+    })
+});
 
 
 
