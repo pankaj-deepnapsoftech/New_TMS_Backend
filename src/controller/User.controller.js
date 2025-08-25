@@ -64,6 +64,7 @@ export const Loginuser = AsyncHandler(async (req, res) => {
     });
 
     res.status(StatusCodes.OK).json({
+        message:"User login Successfully",
         access_token,
         refresh_token
     })
