@@ -6,9 +6,9 @@ import { CreateRenual, DeleteRenual, GetRenual, UpdateRenual } from "../controll
 const routes = Router();
 
 routes.route("/create").post(CreateRenual);
-routes.route("/get").post(GetRenual);
-routes.route("/delete/:id").post(DeleteRenual);
-routes.route("/update/:id").post(UpdateRenual);
+routes.route("/get").get(GetRenual);
+routes.route("/delete/:id").delete(DeleteRenual);
+routes.route("/update/:id").put(UpdateRenual);
 
 
 export default routes
