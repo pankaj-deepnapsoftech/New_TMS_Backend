@@ -4,7 +4,7 @@ import { StatusCodes } from "http-status-codes";
 import { DeleteManyComments } from "../Services/Comments.services.js";
 import { CreateStatusService, DeleteManyStatusService } from "../Services/StatusHistory.services.js";
 import { DeleteManyTasks } from "../Services/task.services.js";
-import { CreateTicketService, DeleteTicketService, GetSingleTicketByTicketId, GetTicketServiceByAssign, GetTicketServiceByCreator, UpdateTicketService } from "../Services/Ticket.services.js";
+import { CreateTicketService, DeleteTicketService, getCardDataforAdmin, GetSingleTicketByTicketId, GetTicketServiceByAssign, GetTicketServiceByCreator, UpdateTicketService } from "../Services/Ticket.services.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { BadRequestError } from "../utils/CoustomError.js";
 
@@ -102,6 +102,18 @@ export const getSingleTicket = AsyncHandler(async (req,res) => {
         data
     })
 });
+// ----------------------------- get Single Ticket data By Ticket id  end ---------------------------
+
+
+
+export const TicketDashboardData =  AsyncHandler(async (req,res) => {
+    const user = req?.currentUser;
+    const data = await getCardDataforAdmin(user?.admin,user?._id)
+    return res.status(StatusCodes.OK).json({
+        data
+    })
+});
+
 
 
 

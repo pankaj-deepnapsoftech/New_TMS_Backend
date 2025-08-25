@@ -336,6 +336,88 @@ export const GetSingleTicketByTicketId = async (id) => {
 }
 
 
+export const getCardDataforAdmin = async (isAdmin, id) => {
+    const matches = isAdmin ? {} : { creator: mongoose.Types.ObjectId(id) };
+    const now = new Date();
+
+    const data = await TicketModel.aggregate([
+        {
+            $match: matches
+        },
+        {
+            $lookup: {
+                from: "statushistories",
+                let: { ticketId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $eq: ["$ticket_id", "$$ticketId"] }
+                        }
+                    },
+                    {
+                        $sort: { createdAt: -1 }
+                    },
+                    {
+                        $limit: 1
+                    }
+                ],
+                as: "latestStatus"
+            }
+        },
+        {
+            $unwind: {
+                path: "$latestStatus",
+                preserveNullAndEmptyArrays: true // in case some tickets have no status history
+            }
+        },
+        {
+            $facet: {
+                statusCounts: [
+                    {
+                        $group: {
+                            _id: "$latestStatus.status",
+                            count: { $sum: 1 }
+                        }
+                    },
+                    {
+                        $project: {
+                            status: "$_id",
+                            count: 1,
+                            _id: 0
+                        }
+                    }
+                ],
+                totalCount: [
+                    {
+                        $count: "total"
+                    }
+                ],
+                overdueCount: [
+                    {
+                        $match: {
+                            due_date: { $lt: now },
+                            "latestStatus.status": { $ne: "Closed" } // only consider non-closed as overdue
+                        }
+                    },
+                    {
+                        $count: "overdue"
+                    }
+                ]
+            }
+        },
+        {
+            $project: {
+                statusCounts: 1,
+                total: { $arrayElemAt: ["$totalCount.total", 0] },
+                overdue: { $arrayElemAt: ["$overdueCount.overdue", 0] }
+            }
+        }
+    ]);
+
+    return data[0]; // returns a single object
+};
+
+
 
 
 
