@@ -54,6 +54,11 @@ export const GetTicketServiceByCreator = async (isAdmin, creator, limit, skip) =
                                         ]
                                     }
                                 },
+                                {
+                                    $addFields: {
+                                        creator: { $arrayElemAt: ["$creator", 0] }
+                                    }
+                                }
                             ]
                         }
                     },
@@ -129,6 +134,11 @@ export const GetTicketServiceByCreator = async (isAdmin, creator, limit, skip) =
                             ]
                         }
                     },
+                    {
+                        $addFields: {
+                            creator: { $arrayElemAt: ["$creator", 0] }
+                        }
+                    }
                 ]
             }
         },
@@ -191,6 +201,11 @@ export const GetTicketServiceByAssign = async (creator, limit, skip) => {
                                         ]
                                     }
                                 },
+                                {
+                                    $addFields: {
+                                        creator: { $arrayElemAt: ["$creator", 0] }
+                                    }
+                                }
                             ]
                         }
                     },
@@ -266,6 +281,11 @@ export const GetTicketServiceByAssign = async (creator, limit, skip) => {
                             ]
                         }
                     },
+                    {
+                        $addFields: {
+                            creator: { $arrayElemAt: ["$creator", 0] }
+                        }
+                    }
                 ]
             }
         },
