@@ -23,8 +23,8 @@ export const CreateImpDocs = AsyncHandler(async (req,res) => {
 // ------------------------------- get importants docs api code start here -----------------------------
 export const GetImpDocs = AsyncHandler(async (req,res) => {
     const {page,limit} = req.query;
-    const pages = parseInt(page);
-    const limits = parseInt(limit);
+    const pages = parseInt(page) || 1;
+    const limits = parseInt(limit) || 10;
     const skip = (pages -1) * limits;
     const result = await getImportantDocsService(skip,limits);
     res.status(StatusCodes.OK).json({

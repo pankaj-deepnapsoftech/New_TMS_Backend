@@ -21,8 +21,8 @@ export const CreateRenual = AsyncHandler(async (req,res) => {
 // ------------------------------- get Renual api code start here -----------------------------
 export const GetRenual = AsyncHandler(async (req,res) => {
     const {page,limit} = req.query;
-    const pages = parseInt(page);
-    const limits = parseInt(limit);
+    const pages = parseInt(page) || 1;
+    const limits = parseInt(limit) || 10;
     const skip = (pages -1) * limits;
     const result = await GetRenualServices(skip,limits);
     res.status(StatusCodes.OK).json({
