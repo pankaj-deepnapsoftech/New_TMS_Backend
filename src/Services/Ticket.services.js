@@ -11,7 +11,6 @@ export const CreateTicketService = async (data) => {
 
 export const GetTicketServiceByCreator = async (isAdmin, creator, limit, skip) => {
     const matches = isAdmin ? {} : { creator: new mongoose.Types.ObjectId(creator) };
-    console.log(matches);
     const result = await TicketModel.aggregate([
         {
             $match: matches 
@@ -338,7 +337,7 @@ export const GetSingleTicketByTicketId = async (id) => {
 
 
 export const getCardDataforAdmin = async (isAdmin, id) => {
-    const matches = isAdmin ? {} : { creator: mongoose.Types.ObjectId(id) };
+    const matches = isAdmin ? {} : { creator: new mongoose.Types.ObjectId(id) };
     const now = new Date();
 
     const data = await TicketModel.aggregate([
@@ -416,6 +415,102 @@ export const getCardDataforAdmin = async (isAdmin, id) => {
     ]);
 
     return data[0]; // returns a single object
+};
+
+export const GetCardDataForUser = async (id) => {
+  const now = new Date();
+
+  const data = await TicketModel.aggregate([
+    {
+      $lookup: {
+        from: "tasks",
+        localField: "_id",
+        foreignField: "ticket_id",
+        as: "task",
+        pipeline:[
+            {
+                $match:{ assign: new mongoose.Types.ObjectId(id) }
+            }
+        ]
+      }
+    },
+    // ✅ Only keep tickets that have at least one task
+    {
+      $match: {
+        task: { $ne: [] }
+      }
+    },
+    {
+      $lookup: {
+        from: "statushistories",
+        let: { ticketId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ["$ticket_id", "$$ticketId"] }
+            }
+          },
+          {
+            $sort: { createdAt: -1 }
+          },
+          {
+            $limit: 1
+          }
+        ],
+        as: "latestStatus"
+      }
+    },
+    {
+      $unwind: {
+        path: "$latestStatus",
+        preserveNullAndEmptyArrays: true
+      }
+    },
+    {
+      $facet: {
+        statusCounts: [
+          {
+            $group: {
+              _id: "$latestStatus.status",
+              count: { $sum: 1 }
+            }
+          },
+          {
+            $project: {
+              status: "$_id",
+              count: 1,
+              _id: 0
+            }
+          }
+        ],
+        totalCount: [
+          {
+            $count: "total"
+          }
+        ],
+        overdueCount: [
+          {
+            $match: {
+              due_date: { $lt: now },
+              "latestStatus.status": { $ne: "Closed" }
+            }
+          },
+          {
+            $count: "overdue"
+          }
+        ]
+      }
+    },
+    {
+      $project: {
+        statusCounts: 1,
+        total: { $arrayElemAt: ["$totalCount.total", 0] },
+        overdue: { $arrayElemAt: ["$overdueCount.overdue", 0] }
+      }
+    }
+  ]);
+
+  return data[0];
 };
 
 

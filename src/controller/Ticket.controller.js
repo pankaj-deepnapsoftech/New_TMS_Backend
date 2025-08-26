@@ -4,9 +4,10 @@ import { StatusCodes } from "http-status-codes";
 import { DeleteManyComments } from "../Services/Comments.services.js";
 import { CreateStatusService, DeleteManyStatusService } from "../Services/StatusHistory.services.js";
 import { DeleteManyTasks } from "../Services/task.services.js";
-import { CreateTicketService, DeleteTicketService, getCardDataforAdmin, GetSingleTicketByTicketId, GetTicketServiceByAssign, GetTicketServiceByCreator, UpdateTicketService } from "../Services/Ticket.services.js";
+import { CreateTicketService, DeleteTicketService, getCardDataforAdmin, GetCardDataForUser, GetSingleTicketByTicketId, GetTicketServiceByAssign, GetTicketServiceByCreator, UpdateTicketService } from "../Services/Ticket.services.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { BadRequestError } from "../utils/CoustomError.js";
+import { mergeCardData } from "../utils/ReducerFunction.js";
 
 
 // ------------------------------ ticket create api start here ------------------------
@@ -105,15 +106,17 @@ export const getSingleTicket = AsyncHandler(async (req,res) => {
 // ----------------------------- get Single Ticket data By Ticket id  end ---------------------------
 
 
-
+// ---------------------------- ticket card Data code start here -------------------------
 export const TicketDashboardData =  AsyncHandler(async (req,res) => {
     const user = req?.currentUser;
-    const data = await getCardDataforAdmin(user?.admin,user?._id)
+    const data = await getCardDataforAdmin(user?.admin,user?._id);
+    const more = await GetCardDataForUser(user?._id);
+    const newData = mergeCardData(data,more)
     return res.status(StatusCodes.OK).json({
-        data
+        data:newData,
     })
 });
-
+// -------------------------------- ticket card Data code end here ------------------------
 
 
 
