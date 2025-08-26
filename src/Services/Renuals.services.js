@@ -7,7 +7,9 @@ export const CreateRenualServices = async (data) => {
 
 export const GetRenualServices = async (skip,limit) => {
     const result = await RenualModel.find().sort({_id:-1}).skip(skip).limit(limit).lean();
-    return result;
+    const data = await RenualModel.find({}).countDocuments();
+
+    return {data:result,totalPage:Math.ceil(data / limit)};
 };
 
 export const UpdateRenualService = async (id,data) => {

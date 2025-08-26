@@ -23,10 +23,11 @@ export const GetRenual = AsyncHandler(async (req,res) => {
     const {page,limit} = req.query;
     const pages = parseInt(page) || 1;
     const limits = parseInt(limit) || 10;
-    const skip = (pages -1) * limits;
+    const skip = (pages - 1) * limits;
     const result = await GetRenualServices(skip,limits);
     res.status(StatusCodes.OK).json({
-        data:result
+        data:result.data,
+        totalPage:result.totalPage
     })
 });
 // ------------------------------- get Renual api code end here ----------------------------------
