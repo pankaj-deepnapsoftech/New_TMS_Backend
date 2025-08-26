@@ -13,7 +13,7 @@ export const GetTicketServiceByCreator = async (isAdmin, creator, limit, skip) =
     const matches = isAdmin ? {} : { creator: new mongoose.Types.ObjectId(creator) };
     const result = await TicketModel.aggregate([
         {
-            $match: matches 
+            $match: matches
         },
         {
             $lookup: {
@@ -35,7 +35,26 @@ export const GetTicketServiceByCreator = async (isAdmin, creator, limit, skip) =
                             from: "comments",
                             localField: "_id",
                             foreignField: "task_id",
-                            as: "comment"
+                            as: "comment",
+                            pipeline: [
+                                {
+                                    $lookup: {
+                                        from: "users",
+                                        localField: "creator",
+                                        foreignField: "_id",
+                                        as: "creator",
+                                        pipeline: [
+                                            {
+                                                $project: {
+                                                    username: 1,
+                                                    full_name: 1,
+                                                    email: 1
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                            ]
                         }
                     },
                     {
@@ -91,7 +110,26 @@ export const GetTicketServiceByCreator = async (isAdmin, creator, limit, skip) =
                 from: "comments",
                 localField: "_id",
                 foreignField: "ticket_id",
-                as: "comment"
+                as: "comment",
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "creator",
+                            foreignField: "_id",
+                            as: "creator",
+                            pipeline: [
+                                {
+                                    $project: {
+                                        username: 1,
+                                        full_name: 1,
+                                        email: 1
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                ]
             }
         },
         {
@@ -134,7 +172,26 @@ export const GetTicketServiceByAssign = async (creator, limit, skip) => {
                             from: "comments",
                             localField: "_id",
                             foreignField: "task_id",
-                            as: "comment"
+                            as: "comment",
+                            pipeline: [
+                                {
+                                    $lookup: {
+                                        from: "users",
+                                        localField: "creator",
+                                        foreignField: "_id",
+                                        as: "creator",
+                                        pipeline: [
+                                            {
+                                                $project: {
+                                                    username: 1,
+                                                    full_name: 1,
+                                                    email: 1
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                            ]
                         }
                     },
                     {
@@ -190,7 +247,26 @@ export const GetTicketServiceByAssign = async (creator, limit, skip) => {
                 from: "comments",
                 localField: "_id",
                 foreignField: "ticket_id",
-                as: "comment"
+                as: "comment",
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "creator",
+                            foreignField: "_id",
+                            as: "creator",
+                            pipeline: [
+                                {
+                                    $project: {
+                                        username: 1,
+                                        full_name: 1,
+                                        email: 1
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                ]
             }
         },
         {
@@ -244,7 +320,26 @@ export const GetSingleTicketByTicketId = async (id) => {
                             from: "comments",
                             localField: "_id",
                             foreignField: "task_id",
-                            as: "comment"
+                            as: "comment",
+                            pipeline: [
+                                {
+                                    $lookup: {
+                                        from: "users",
+                                        localField: "creator",
+                                        foreignField: "_id",
+                                        as: "creator",
+                                        pipeline: [
+                                            {
+                                                $project: {
+                                                    username: 1,
+                                                    full_name: 1,
+                                                    email: 1
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                            ]
                         }
                     },
                     {
@@ -301,7 +396,31 @@ export const GetSingleTicketByTicketId = async (id) => {
                 from: "comments",
                 localField: "_id",
                 foreignField: "ticket_id",
-                as: "comment"
+                as: "comment",
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "creator",
+                            foreignField: "_id",
+                            as: "creator",
+                            pipeline: [
+                                {
+                                    $project: {
+                                        username: 1,
+                                        full_name: 1,
+                                        email: 1
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        $addFields: {
+                            creator: { $arrayElemAt: ["$creator", 0] }
+                        }
+                    }
+                ]
             }
         },
         {
@@ -324,6 +443,11 @@ export const GetSingleTicketByTicketId = async (id) => {
                             username: 1,
                             full_name: 1,
                             email: 1
+                        }
+                    },
+                    {
+                        $addFields: {
+                            creator: { $arrayElemAt: ["$creator", 0] }
                         }
                     }
                 ]
@@ -418,99 +542,99 @@ export const getCardDataforAdmin = async (isAdmin, id) => {
 };
 
 export const GetCardDataForUser = async (id) => {
-  const now = new Date();
+    const now = new Date();
 
-  const data = await TicketModel.aggregate([
-    {
-      $lookup: {
-        from: "tasks",
-        localField: "_id",
-        foreignField: "ticket_id",
-        as: "task",
-        pipeline:[
-            {
-                $match:{ assign: new mongoose.Types.ObjectId(id) }
+    const data = await TicketModel.aggregate([
+        {
+            $lookup: {
+                from: "tasks",
+                localField: "_id",
+                foreignField: "ticket_id",
+                as: "task",
+                pipeline: [
+                    {
+                        $match: { assign: new mongoose.Types.ObjectId(id) }
+                    }
+                ]
             }
-        ]
-      }
-    },
-    // ✅ Only keep tickets that have at least one task
-    {
-      $match: {
-        task: { $ne: [] }
-      }
-    },
-    {
-      $lookup: {
-        from: "statushistories",
-        let: { ticketId: "$_id" },
-        pipeline: [
-          {
+        },
+        // ✅ Only keep tickets that have at least one task
+        {
             $match: {
-              $expr: { $eq: ["$ticket_id", "$$ticketId"] }
+                task: { $ne: [] }
             }
-          },
-          {
-            $sort: { createdAt: -1 }
-          },
-          {
-            $limit: 1
-          }
-        ],
-        as: "latestStatus"
-      }
-    },
-    {
-      $unwind: {
-        path: "$latestStatus",
-        preserveNullAndEmptyArrays: true
-      }
-    },
-    {
-      $facet: {
-        statusCounts: [
-          {
-            $group: {
-              _id: "$latestStatus.status",
-              count: { $sum: 1 }
+        },
+        {
+            $lookup: {
+                from: "statushistories",
+                let: { ticketId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $eq: ["$ticket_id", "$$ticketId"] }
+                        }
+                    },
+                    {
+                        $sort: { createdAt: -1 }
+                    },
+                    {
+                        $limit: 1
+                    }
+                ],
+                as: "latestStatus"
             }
-          },
-          {
+        },
+        {
+            $unwind: {
+                path: "$latestStatus",
+                preserveNullAndEmptyArrays: true
+            }
+        },
+        {
+            $facet: {
+                statusCounts: [
+                    {
+                        $group: {
+                            _id: "$latestStatus.status",
+                            count: { $sum: 1 }
+                        }
+                    },
+                    {
+                        $project: {
+                            status: "$_id",
+                            count: 1,
+                            _id: 0
+                        }
+                    }
+                ],
+                totalCount: [
+                    {
+                        $count: "total"
+                    }
+                ],
+                overdueCount: [
+                    {
+                        $match: {
+                            due_date: { $lt: now },
+                            "latestStatus.status": { $ne: "Closed" }
+                        }
+                    },
+                    {
+                        $count: "overdue"
+                    }
+                ]
+            }
+        },
+        {
             $project: {
-              status: "$_id",
-              count: 1,
-              _id: 0
+                statusCounts: 1,
+                total: { $arrayElemAt: ["$totalCount.total", 0] },
+                overdue: { $arrayElemAt: ["$overdueCount.overdue", 0] }
             }
-          }
-        ],
-        totalCount: [
-          {
-            $count: "total"
-          }
-        ],
-        overdueCount: [
-          {
-            $match: {
-              due_date: { $lt: now },
-              "latestStatus.status": { $ne: "Closed" }
-            }
-          },
-          {
-            $count: "overdue"
-          }
-        ]
-      }
-    },
-    {
-      $project: {
-        statusCounts: 1,
-        total: { $arrayElemAt: ["$totalCount.total", 0] },
-        overdue: { $arrayElemAt: ["$overdueCount.overdue", 0] }
-      }
-    }
-  ]);
+        }
+    ]);
 
-  return data[0];
+    return data[0];
 };
 
 
