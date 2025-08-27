@@ -2,6 +2,7 @@ import { StatusCodes } from "http-status-codes";
 
 // -------------------------- local imports here ------------------
 import { DeleteManyComments } from "../Services/Comments.services.js";
+import { CreateNotificationService } from "../Services/notification.service.js";
 import { CreateStatusService, DeleteManyStatusService } from "../Services/StatusHistory.services.js";
 import { CreateTaskServices, DeleteTaskService, updateTaskService } from "../Services/task.services.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
@@ -17,6 +18,7 @@ export const CreateTask = AsyncHandler(async(req,res) => {
         data:result
     });
     await CreateStatusService({task_id:result._id});
+    await CreateNotificationService({creator:req?.currentUser?._id,recipientId:data.assign,title:"Task assign",message:" this task is assign by you",priority:data.priority || "medium"})
 });
 // ----------------------------- task Create api end here -------------------------------
 
