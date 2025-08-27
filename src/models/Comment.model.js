@@ -1,22 +1,33 @@
-import {Schema,model} from "mongoose";
+import { Schema, model } from "mongoose";
 
+const CommentSchema = new Schema(
+  {
+    text: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    file: {
+      type: String,
+      default: null,
+    },
+    creator: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    task_id: {
+      type: Schema.Types.ObjectId,
+      ref: "Task",
+    },
+    ticket_id: {
+      type: Schema.Types.ObjectId,
+      ref: "Ticket",
+    },
+  },
+  {
+    timestamps: true, 
+  }
+);
 
-const CommectSchema = new Schema({
-    text:{type:String,required:true},
-    file:{type:String},
-    creator:{type:Schema.Types.ObjectId,ref:"User"},
-    task_id:{type:Schema.Types.ObjectId,ref:"Task"},
-    ticket_id:{type:Schema.Types.ObjectId,ref:"Ticket"}
-});
-
-
-export const CommentModel = model("Comment",CommectSchema);
-
-
-
-
-
-
-
-
-
+export const CommentModel = model("Comment", CommentSchema);
