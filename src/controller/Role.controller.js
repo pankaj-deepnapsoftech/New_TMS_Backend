@@ -22,11 +22,10 @@ export const CreateRole = AsyncHandler(async (req,res) => {
 // --------------------- Role get api start here -----------------------------
 export const getRole = AsyncHandler(async (req,res) => {
     const {page,limit} = req.query;
-    const {creator} =  req.params;
     const pages = parseInt(page) || 1;
     const limits = parseInt(limit) || 10;
     const skip = (pages - 1) * limits;
-    const data = await GetRoleByCreator(creator,limit,skip);
+    const data = await GetRoleByCreator(req.currentUser.admin,req.currentUser._id,limit,skip);
     return res.status(StatusCodes.OK).json({
         data
     });

@@ -10,300 +10,274 @@ export const CreateTicketService = async (data) => {
 };
 
 export const GetTicketServiceByCreator = async (isAdmin, creator, limit, skip) => {
-    const matches = isAdmin ? {} : { creator: new mongoose.Types.ObjectId(creator) };
-    const result = await TicketModel.aggregate([
-        {
-            $match: matches
-        },
-        {
-            $lookup: {
-                from: "tasks",
-                localField: "_id",
-                foreignField: "ticket_id",
-                as: "task",
-                pipeline: [
-                    {
-                        $lookup: {
-                            from: "statushistories",
-                            localField: "_id",
-                            foreignField: "task_id",
-                            as: "status"
-                        }
-                    },
-                    {
-                        $lookup: {
-                            from: "comments",
-                            localField: "_id",
-                            foreignField: "task_id",
-                            as: "comment",
-                            pipeline: [
-                                {
-                                    $lookup: {
-                                        from: "users",
-                                        localField: "creator",
-                                        foreignField: "_id",
-                                        as: "creator",
-                                        pipeline: [
-                                            {
-                                                $project: {
-                                                    username: 1,
-                                                    full_name: 1,
-                                                    email: 1
-                                                }
-                                            }
-                                        ]
-                                    }
-                                },
-                                {
-                                    $addFields: {
-                                        creator: { $arrayElemAt: ["$creator", 0] }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        $lookup: {
-                            from: "users",
-                            localField: "creator",
-                            foreignField: "_id",
-                            as: "creator",
-                            pipeline: [
-                                {
-                                    $project: {
-                                        username: 1,
-                                        full_name: 1,
-                                        email: 1
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        $lookup: {
-                            from: "users",
-                            localField: "assign",
-                            foreignField: "_id",
-                            as: "assign",
-                            pipeline: [
-                                {
-                                    $project: {
-                                        username: 1,
-                                        full_name: 1,
-                                        email: 1
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    { $unwind: { path: "$assign", preserveNullAndEmptyArrays: true } },
-                    { $unwind: { path: "$creator", preserveNullAndEmptyArrays: true } }
+  const matches = isAdmin ? {} : { creator: new mongoose.Types.ObjectId(creator) };
 
-                ]
-            }
-        },
-        {
+  const result = await TicketModel.aggregate([
+    { $match: matches },
+
+    {
+      $facet: {
+        data: [
+          // ---- your existing pipeline here ----
+          {
             $lookup: {
-                from: "statushistories",
-                localField: "_id",
-                foreignField: "ticket_id",
-                as: "status"
-            }
-        },
-        {
-            $lookup: {
-                from: "comments",
-                localField: "_id",
-                foreignField: "ticket_id",
-                as: "comment",
-                pipeline: [
-                    {
+              from: "tasks",
+              localField: "_id",
+              foreignField: "ticket_id",
+              as: "task",
+              pipeline: [
+                {
+                  $lookup: {
+                    from: "statushistories",
+                    localField: "_id",
+                    foreignField: "task_id",
+                    as: "status",
+                  },
+                },
+                {
+                  $lookup: {
+                    from: "comments",
+                    localField: "_id",
+                    foreignField: "task_id",
+                    as: "comment",
+                    pipeline: [
+                      {
                         $lookup: {
-                            from: "users",
-                            localField: "creator",
-                            foreignField: "_id",
-                            as: "creator",
-                            pipeline: [
-                                {
-                                    $project: {
-                                        username: 1,
-                                        full_name: 1,
-                                        email: 1
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        $addFields: {
-                            creator: { $arrayElemAt: ["$creator", 0] }
-                        }
-                    }
-                ]
-            }
-        },
-        {
+                          from: "users",
+                          localField: "creator",
+                          foreignField: "_id",
+                          as: "creator",
+                          pipeline: [
+                            { $project: { username: 1, full_name: 1, email: 1 } },
+                          ],
+                        },
+                      },
+                      { $addFields: { creator: { $arrayElemAt: ["$creator", 0] } } },
+                    ],
+                  },
+                },
+                {
+                  $lookup: {
+                    from: "users",
+                    localField: "creator",
+                    foreignField: "_id",
+                    as: "creator",
+                    pipeline: [
+                      { $project: { username: 1, full_name: 1, email: 1 } },
+                    ],
+                  },
+                },
+                {
+                  $lookup: {
+                    from: "users",
+                    localField: "assign",
+                    foreignField: "_id",
+                    as: "assign",
+                    pipeline: [
+                      { $project: { username: 1, full_name: 1, email: 1 } },
+                    ],
+                  },
+                },
+                { $unwind: { path: "$assign", preserveNullAndEmptyArrays: true } },
+                { $unwind: { path: "$creator", preserveNullAndEmptyArrays: true } },
+              ],
+            },
+          },
+          {
             $lookup: {
-                from: "departments",
-                localField: "department",
-                foreignField: "_id",
-                as: "department"
-            }
-        },
-        {
-            $unwind: "$department"
-        }
-    ]).sort({ _id: -1 }).skip(skip).limit(limit);
-    return result;
+              from: "statushistories",
+              localField: "_id",
+              foreignField: "ticket_id",
+              as: "status",
+            },
+          },
+          {
+            $lookup: {
+              from: "comments",
+              localField: "_id",
+              foreignField: "ticket_id",
+              as: "comment",
+              pipeline: [
+                {
+                  $lookup: {
+                    from: "users",
+                    localField: "creator",
+                    foreignField: "_id",
+                    as: "creator",
+                    pipeline: [
+                      { $project: { username: 1, full_name: 1, email: 1 } },
+                    ],
+                  },
+                },
+                { $addFields: { creator: { $arrayElemAt: ["$creator", 0] } } },
+              ],
+            },
+          },
+          {
+            $lookup: {
+              from: "departments",
+              localField: "department",
+              foreignField: "_id",
+              as: "department",
+            },
+          },
+          { $unwind: "$department" },
+          { $sort: { _id: -1 } },
+          { $skip: skip },
+          { $limit: limit },
+        ],
+
+        count: [
+          { $count: "totalCount" },
+        ],
+      },
+    },
+    {
+      $project: {
+        data: 1,
+        totalCount: { $ifNull: [{ $arrayElemAt: ["$count.totalCount", 0] }, 0] },
+      },
+    },
+  ]);
+
+  return {data:result[0].data,totalPage:Math.ceil(result[0].totalCount / limit)}; // { data: [...], totalCount: N }
 };
+
 
 export const GetTicketServiceByAssign = async (creator, limit, skip) => {
-    const result = await TicketModel.aggregate([
-        {
+  const result = await TicketModel.aggregate([
+    {
+      $lookup: {
+        from: "tasks",
+        localField: "_id",
+        foreignField: "ticket_id",
+        as: "task",
+        pipeline: [
+          {
+            $match: { assign: new mongoose.Types.ObjectId(creator) }
+          },
+          {
             $lookup: {
-                from: "tasks",
-                localField: "_id",
-                foreignField: "ticket_id",
-                as: "task",
-                pipeline: [
-                    {
-                        $match: { assign: new mongoose.Types.ObjectId(creator) }
-                    },
-                    {
-                        $lookup: {
-                            from: "statushistories",
-                            localField: "_id",
-                            foreignField: "task_id",
-                            as: "status"
-                        }
-                    },
-                    {
-                        $lookup: {
-                            from: "comments",
-                            localField: "_id",
-                            foreignField: "task_id",
-                            as: "comment",
-                            pipeline: [
-                                {
-                                    $lookup: {
-                                        from: "users",
-                                        localField: "creator",
-                                        foreignField: "_id",
-                                        as: "creator",
-                                        pipeline: [
-                                            {
-                                                $project: {
-                                                    username: 1,
-                                                    full_name: 1,
-                                                    email: 1
-                                                }
-                                            }
-                                        ]
-                                    }
-                                },
-                                {
-                                    $addFields: {
-                                        creator: { $arrayElemAt: ["$creator", 0] }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        $lookup: {
-                            from: "users",
-                            localField: "creator",
-                            foreignField: "_id",
-                            as: "creator",
-                            pipeline: [
-                                {
-                                    $project: {
-                                        username: 1,
-                                        full_name: 1,
-                                        email: 1
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        $lookup: {
-                            from: "users",
-                            localField: "assign",
-                            foreignField: "_id",
-                            as: "assign",
-                            pipeline: [
-                                {
-                                    $project: {
-                                        username: 1,
-                                        full_name: 1,
-                                        email: 1
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    { $unwind: { path: "$assign", preserveNullAndEmptyArrays: true } },
-                    { $unwind: { path: "$creator", preserveNullAndEmptyArrays: true } }
+              from: "statushistories",
+              localField: "_id",
+              foreignField: "task_id",
+              as: "status"
+            }
+          },
+          {
+            $lookup: {
+              from: "comments",
+              localField: "_id",
+              foreignField: "task_id",
+              as: "comment",
+              pipeline: [
+                {
+                  $lookup: {
+                    from: "users",
+                    localField: "creator",
+                    foreignField: "_id",
+                    as: "creator",
+                    pipeline: [
+                      { $project: { username: 1, full_name: 1, email: 1 } }
+                    ]
+                  }
+                },
+                { $addFields: { creator: { $arrayElemAt: ["$creator", 0] } } }
+              ]
+            }
+          },
+          {
+            $lookup: {
+              from: "users",
+              localField: "creator",
+              foreignField: "_id",
+              as: "creator",
+              pipeline: [
+                { $project: { username: 1, full_name: 1, email: 1 } }
+              ]
+            }
+          },
+          {
+            $lookup: {
+              from: "users",
+              localField: "assign",
+              foreignField: "_id",
+              as: "assign",
+              pipeline: [
+                { $project: { username: 1, full_name: 1, email: 1 } }
+              ]
+            }
+          },
+          { $unwind: { path: "$assign", preserveNullAndEmptyArrays: true } },
+          { $unwind: { path: "$creator", preserveNullAndEmptyArrays: true } }
+        ]
+      }
+    },
+    {
+      $lookup: {
+        from: "statushistories",
+        localField: "_id",
+        foreignField: "ticket_id",
+        as: "status"
+      }
+    },
+    {
+      $lookup: {
+        from: "comments",
+        localField: "_id",
+        foreignField: "ticket_id",
+        as: "comment",
+        pipeline: [
+          {
+            $lookup: {
+              from: "users",
+              localField: "creator",
+              foreignField: "_id",
+              as: "creator",
+              pipeline: [
+                { $project: { username: 1, full_name: 1, email: 1 } }
+              ]
+            }
+          },
+          { $addFields: { creator: { $arrayElemAt: ["$creator", 0] } } }
+        ]
+      }
+    },
+    {
+      $lookup: {
+        from: "departments",
+        localField: "department",
+        foreignField: "_id",
+        as: "department"
+      }
+    },
+    { $unwind: "$department" },
+    { $match: { task: { $ne: [] } } },
 
-                ]
-            }
-        },
-        {
-            $lookup: {
-                from: "statushistories",
-                localField: "_id",
-                foreignField: "ticket_id",
-                as: "status"
-            }
-        },
-        {
-            $lookup: {
-                from: "comments",
-                localField: "_id",
-                foreignField: "ticket_id",
-                as: "comment",
-                pipeline: [
-                    {
-                        $lookup: {
-                            from: "users",
-                            localField: "creator",
-                            foreignField: "_id",
-                            as: "creator",
-                            pipeline: [
-                                {
-                                    $project: {
-                                        username: 1,
-                                        full_name: 1,
-                                        email: 1
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        $addFields: {
-                            creator: { $arrayElemAt: ["$creator", 0] }
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            $lookup: {
-                from: "departments",
-                localField: "department",
-                foreignField: "_id",
-                as: "department"
-            }
-        },
-        {
-            $unwind: "$department"
-        },
-        { $match: { task: { $ne: [] } } }
-    ]).sort({ _id: -1 }).skip(skip).limit(limit);
-    return result;
+    // ---- Facet for count + data ----
+    {
+      $facet: {
+        data: [
+          { $sort: { _id: -1 } },
+          { $skip: skip },
+          { $limit: limit }
+        ],
+        count: [
+          { $count: "totalCount" }
+        ]
+      }
+    },
+    {
+      $project: {
+        data: 1,
+        totalCount: { $ifNull: [{ $arrayElemAt: ["$count.totalCount", 0] }, 0] }
+      }
+    }
+  ]);
+
+  return {data:result[0].data,totalPage:Math.ceil(result[0].totalCount / limit)};
 };
+
 
 export const UpdateTicketService = async (id, data) => {
     const result = await TicketModel.findByIdAndUpdate(id, data, { new: true, lean: true });

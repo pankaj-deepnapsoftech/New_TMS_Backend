@@ -6,8 +6,8 @@ export const CreateRoleService = async (value) => {
     return data;
 };
 
-export const GetRoleByCreator = async(creator,limit,skip) => {
-    const data = await RoleModel.find({creator}).sort({_id:-1}).skip(skip).limit(limit).lean();
+export const GetRoleByCreator = async(isAdmin,creator,limit,skip) => {
+    const data = await RoleModel.find(isAdmin ? {} : {creator}).sort({_id:-1}).skip(skip).limit(limit).lean();
     return data;
 }
 

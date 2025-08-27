@@ -34,7 +34,8 @@ export const getTicket = AsyncHandler(async (req, res) => {
     const skip = (pages - 1) * limits
     const data = await GetTicketServiceByCreator(admin, id, limits, skip);
     return res.status(StatusCodes.OK).json({
-        data
+        data: data.data,
+        totalPage: data.totalPage
     });
 });
 // ------------------------------- ticket get api end here ----------------------------------
@@ -88,7 +89,8 @@ export const getTicketbyAssign = AsyncHandler(async (req, res) => {
     const skip = (pages - 1) * limits
     const data = await GetTicketServiceByAssign(id, limits, skip);
     return res.status(StatusCodes.OK).json({
-        data
+        data: data.data,
+        totalPage: data.totalPage
     });
 });
 // --------------------------- ticket get api by assignj end here --------------------------
@@ -96,8 +98,8 @@ export const getTicketbyAssign = AsyncHandler(async (req, res) => {
 
 
 // ----------------------------- get Single Ticket data By Ticket id  ---------------------------
-export const getSingleTicket = AsyncHandler(async (req,res) => {
-    const {id} = req.params;
+export const getSingleTicket = AsyncHandler(async (req, res) => {
+    const { id } = req.params;
     const data = await GetSingleTicketByTicketId(id);
     return res.status(StatusCodes.OK).json({
         data
@@ -108,13 +110,13 @@ export const getSingleTicket = AsyncHandler(async (req,res) => {
 
 
 // ---------------------------- ticket card Data code start here -------------------------
-export const TicketDashboardData =  AsyncHandler(async (req,res) => {
+export const TicketDashboardData = AsyncHandler(async (req, res) => {
     const user = req?.currentUser;
-    const data = await getCardDataforAdmin(user?.admin,user?._id);
+    const data = await getCardDataforAdmin(user?.admin, user?._id);
     const more = await GetCardDataForUser(user?._id);
-    const newData = mergeCardData(data,more)
+    const newData = mergeCardData(data, more)
     return res.status(StatusCodes.OK).json({
-        data:newData,
+        data: newData,
     })
 });
 // -------------------------------- ticket card Data code end here ------------------------

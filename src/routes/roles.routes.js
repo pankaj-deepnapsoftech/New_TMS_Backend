@@ -7,7 +7,7 @@ import { CreateRole, deleteRole, getAllRole, getRole, updateRole } from "../cont
 const routes = Router();
 
 routes.route("/create").post(CreateRole);
-routes.route("/get/:creator").get(getRole);
+routes.route("/get").get(getRole);
 routes.route("/update/:id").put(updateRole);
 routes.route("/delete/:id").delete(deleteRole);
 routes.route("/all-role").get(getAllRole);
