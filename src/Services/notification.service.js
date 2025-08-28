@@ -21,6 +21,12 @@ export const DeleteNotificationService = async (id) => {
     return result;
 };
 
+export const DeleteManyNotification = async (id) => {
+    const result = await NotificationModel.deleteMany({$or:[{creator:id},{recipientId:id}]});
+    return result;
+}
+
+
 
 
 

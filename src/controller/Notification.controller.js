@@ -1,8 +1,9 @@
 import { StatusCodes } from "http-status-codes";
 
 // ------------------------------- local import links -------------------------------
-import { GetNotificationService } from "../Services/notification.service.js";
+import { GetNotificationService, UpdateNotificationService } from "../Services/notification.service.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
+import { NotFoundError } from "../utils/CoustomError.js";
 
 
 
@@ -18,6 +19,24 @@ export const GetNotification = AsyncHandler(async (req,res) => {
     })
 });
 // ------------------------------------ get notification api end here -----------------------
+
+
+
+// ------------------------------------ Update Notification api start here ---------------------------
+export const UpdateNotification = AsyncHandler(async (req,res) => {
+    const {id} = req.params;
+    const data = req.body;
+    const result = await UpdateNotificationService(id,data);
+    if(!result){
+        throw new NotFoundError("Notification Not Found","UpdateNotification function")
+    };
+    return res.status(StatusCodes.OK).json({
+        message:"Notification Updated Successfully",
+        data:result
+    });
+});
+// ---------------------------------- Update Notification api end here --------------------------
+
 
 
 

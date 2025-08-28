@@ -2,7 +2,7 @@ import { StatusCodes } from "http-status-codes";
 
 // -------------------------- local imports here ------------------
 import { DeleteManyComments } from "../Services/Comments.services.js";
-import { CreateNotificationService } from "../Services/notification.service.js";
+import { CreateNotificationService, DeleteManyNotification } from "../Services/notification.service.js";
 import { CreateStatusService, DeleteManyStatusService } from "../Services/StatusHistory.services.js";
 import { CreateTaskServices, DeleteTaskService, updateTaskService } from "../Services/task.services.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
@@ -38,6 +38,7 @@ export const DeleteTask = AsyncHandler(async (req,res) => {
    
     await DeleteManyStatusService(data._id)
     await DeleteManyComments(data._id);
+    await DeleteManyNotification(data._id)
 });
 // -------------------------------- task Delete api end here -----------------------------
 
