@@ -26,6 +26,10 @@ export const DeleteManyNotification = async (id) => {
     return result;
 }
 
+export const GetSingleNotificationservice =  async (id) => {
+    const result = await NotificationModel.findById(id).populate([{path:"creator",select:"username full_name email"},{path:"recipientId",select:"username full_name email"}]);
+    return result;
+}
 
 
 
