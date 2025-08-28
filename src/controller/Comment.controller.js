@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes";
 // ------------------------- local imports here -----------------------------------
 import { UserModel } from "../models/User.model.js";
 import { CreateCommentService, DeleteCommentService, GetCommentsService, UpdateCommentServices } from "../Services/Comments.services.js";
-import {  GetManyNotification,  InsertManyNotification } from "../Services/notification.service.js";
+import { CreateNotificationService, GetManyNotification, GetSingleNotificationservice, InsertManyNotification } from "../Services/notification.service.js";
 import { PushTaskNotification } from "../socket/notification.socket.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { BadRequestError } from "../utils/CoustomError.js";
@@ -21,21 +21,37 @@ export const CreateComment = AsyncHandler(async (req, res) => {
     const assign = await GetCommentsService(result._id);
 
 
-    if (String(assign[0].tickets.creator) === String(req?.currentUser?._id) && req?.currentUser?.admin) {
+    if (String(assign[0]?.tickets?.creator) === String(req?.currentUser?._id) && req?.currentUser?.admin) {
         const newData = assign[0]?.tickets?.tasks?.map((item) => ({ creator: req?.currentUser?._id, recipientId: item.assign, title: "comment", message: "Ticket creator add comment", priority: assign?.tickets?.priority || "medium" }))
         const notification = await InsertManyNotification(newData);
         const PushNotification = await GetManyNotification(notification.map((item) => item._id));
         PushTaskNotification(PushNotification);
-    } else if (String(assign[0].tickets.creator) === String(req?.currentUser?._id) && !req?.currentUser?.admin) {
+    } else if (String(assign[0]?.tickets?.creator) === String(req?.currentUser?._id) && !req?.currentUser?.admin) {
         const admin = await UserModel.findOne({ admin: true });
         const newData = assign[0]?.tickets?.tasks?.map((item) => ({ creator: req?.currentUser?._id, recipientId: item.assign, title: "comment", message: "Ticket creator add comment", priority: assign?.tickets?.priority || "medium" }))
         const notification = await InsertManyNotification([...newData, { creator: req?.currentUser?._id, recipientId: admin._id, title: "comment", message: "Ticket creator add comment", priority: assign?.tickets?.priority || "medium" }]);
         const PushNotification = await GetManyNotification(notification.map((item) => item._id));
         PushTaskNotification(PushNotification);
-    } else if (assign[0].tickets) {
+    } else if (assign[0]?.tickets) {
         const admin = await UserModel.findOne({ admin: true });
         const newData = assign[0]?.tickets?.tasks?.map((item) => ({ creator: req?.currentUser?._id, recipientId: item.assign, title: "comment", message: "Ticket creator add comment", priority: assign?.tickets?.priority || "medium" }))
-        const notification = await InsertManyNotification([...newData, { creator: req?.currentUser?._id, recipientId: admin._id, title: "comment", message: "Ticket creator add comment", priority: assign?.tickets?.priority || "medium" },String(admin._id) !== assign[0].tickets.creator && { creator: req?.currentUser?._id, recipientId: admin._id, title: "comment", message: "Ticket creator add comment", priority: assign?.tickets?.priority || "medium" }]);
+        const notification = await InsertManyNotification([...newData, { creator: req?.currentUser?._id, recipientId: admin._id, title: "comment", message: "Ticket creator add comment", priority: assign?.tickets?.priority || "medium" }, String(admin._id) !== assign[0].tickets.creator && { creator: req?.currentUser?._id, recipientId: admin._id, title: "comment", message: "Ticket creator add comment", priority: assign?.tickets?.priority || "medium" }]);
+        const PushNotification = await GetManyNotification(notification.map((item) => item._id));
+        PushTaskNotification(PushNotification);
+    } else if (String(assign[0]?.tasks?.creator) === String(req?.currentUser?._id) && req?.currentUser?.admin) {
+        const notification = await CreateNotificationService({ creator: req?.currentUser?._id, recipientId: assign[0]?.tasks?.assign, title: "task", message: "Task ", priority: data.priority || "medium" });
+        const PushNotification = await GetSingleNotificationservice(notification._id);
+        PushTaskNotification(PushNotification);
+    } else if (String(assign[0]?.tasks?.creator) === String(req?.currentUser?._id) && !req?.currentUser?.admin) {
+        const admin = await UserModel.findOne({ admin: true });
+        const newData = [{ creator: req?.currentUser?._id, recipientId: assign[0]?.tasks?.assign, title: "task", message: "task have new Comment", priority: assign?.tickets?.priority || "medium" }, { creator: req?.currentUser?._id, recipientId: admin._id, title: "Task", message: "task have new Comment", priority: assign?.tickets?.priority || "medium" }]
+        const notification = await InsertManyNotification(newData);
+        const PushNotification = await GetManyNotification(notification.map((item) => item._id));
+        PushTaskNotification(PushNotification);
+    } else if (assign[0]?.tasks) {
+        const admin = await UserModel.findOne({ admin: true });
+        const newData = [{ creator: req?.currentUser?._id, recipientId: assign[0].tasks.creator, title: "task", message: "task have new Comment", priority: assign?.tickets?.priority || "medium" }, String(admin._id) !== assign[0].tasks.creator && { creator: req?.currentUser?._id, recipientId: admin._id, title: "comment", message: "Ticket creator add comment", priority: assign?.tickets?.priority || "medium" }]
+        const notification = await InsertManyNotification(newData);
         const PushNotification = await GetManyNotification(notification.map((item) => item._id));
         PushTaskNotification(PushNotification);
     }
