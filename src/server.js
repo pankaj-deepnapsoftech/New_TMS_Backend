@@ -18,10 +18,13 @@ import { HealthPage } from "./helper/health.js";
 import MainRoutes from "./routes.js";
 import { BadRequestError } from "./utils/CoustomError.js";
 import getLogger from "./utils/logger.js";
+import { SocketConnection } from "./Socket.js";
 
 const logger = getLogger('Server.js file');
 
 const SERVER_PORT = 8093;
+
+let SocketIo;
 
 
 // ------------------------- this is main function hold all the function start ---------------------
@@ -90,12 +93,16 @@ function ConnectionHandler() {
 
 
 // ----------------------------- here is the start function code start --------------------- 
-function startSerevr(app) {
+async function startSerevr(app) {
     const server = http.createServer(app);
+    const ioConnection = await SocketConnection();
+    SocketIo = ioConnection;
     server.listen(SERVER_PORT, () => {
         logger.info(`server is up and running 🚀 on port : ${SERVER_PORT} `)
     })
 }
+
+export {SocketIo}
 // ----------------------------- here is the start function code end --------------------- 
 
 
