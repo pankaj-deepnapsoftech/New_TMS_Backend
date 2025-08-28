@@ -16,9 +16,9 @@ import { config } from "./config/env.config.js";
 import { DbConnect } from "./connections/dbConnection.js";
 import { HealthPage } from "./helper/health.js";
 import MainRoutes from "./routes.js";
+import { SocketConnection } from "./Socket.js";
 import { BadRequestError } from "./utils/CoustomError.js";
 import getLogger from "./utils/logger.js";
-import { SocketConnection } from "./Socket.js";
 
 const logger = getLogger('Server.js file');
 
@@ -50,7 +50,7 @@ function MiddlewareHandler(app) {
     app.use(compression());
     app.use(cors({
         origin: config.NODE_ENV === 'development' ? config.LOCAL_CLIENT_URL : config.CLIENT_URL,
-        methods: ["POST", "PUT", "PATCH", "DELETE", "OPTION"],
+        methods: ["POST", "PUT", "PATCH", "DELETE", "OPTION","GET"],
         credentials: true
     }));
 }
@@ -95,7 +95,7 @@ function ConnectionHandler() {
 // ----------------------------- here is the start function code start --------------------- 
 async function startSerevr(app) {
     const server = http.createServer(app);
-    const ioConnection = await SocketConnection();
+    const ioConnection = await SocketConnection(server);
     SocketIo = ioConnection;
     server.listen(SERVER_PORT, () => {
         logger.info(`server is up and running 🚀 on port : ${SERVER_PORT} `)

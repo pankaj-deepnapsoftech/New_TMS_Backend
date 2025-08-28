@@ -4,7 +4,7 @@ import { BadRequestError } from "../utils/CoustomError.js";
 import { VerifyToken } from "../utils/TokenHandler.js";
 
 
-export const Autherization = AsyncHandler(async (req,res,next) => {
+export const Autherization = AsyncHandler(async (req,_res,next) => {
     const token = req.cookies.at || req.headers.authorization?.split(" ")[1]
     
     const {id} = VerifyToken(token);
