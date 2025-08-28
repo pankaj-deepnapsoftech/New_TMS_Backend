@@ -40,4 +40,6 @@ TicketSchema.pre("save", async function (next) {
   next();
 });
 
+TicketSchema.index({ ticket_id: 1}, { unique: true })
+
 export const TicketModel = model("Ticket", TicketSchema);
