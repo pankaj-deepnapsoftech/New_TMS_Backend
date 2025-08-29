@@ -20,7 +20,7 @@ export const RegisterUser = AsyncHandler(async (req, res) => {
     const create = await CreateUserService(data);
     const token = SingToken({ email: create.email, id: create._id }, "1day");
     const verificationLink = `${config.NODE_ENV === "development" ? config.LOCAL_BACKEND_URL : config.BACKEND_URL}/user/verify?token=${token}`
-    SendMail("EmailVerification.ejs", { userName: create.username, verificationLink: verificationLink })
+    SendMail("EmailVerification.ejs", { userName: create.username, verificationLink: verificationLink },{subject:"Email verification",email:create.email})
     return res.status(StatusCodes.CREATED).json({
         message: "User Created Successfully"
     });
