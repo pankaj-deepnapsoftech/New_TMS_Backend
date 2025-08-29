@@ -453,7 +453,6 @@ export const GetSingleTicketByTicketId = async (id) => {
     return result[0];
 }
 
-
 export const getCardDataforAdmin = async (isAdmin, id) => {
     const matches = isAdmin ? {} : { creator: new mongoose.Types.ObjectId(id) };
     const now = new Date();
