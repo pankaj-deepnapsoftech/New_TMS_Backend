@@ -136,13 +136,14 @@ export const TicketActivityChart = AsyncHandler(async (req, res) => {
         data: finalData
     });
 });
-
-
 // ------------------------------ Ticket activity Status end here ------------------------
 
 
 
-
+// ------------------------------- OpenTasks api Start Here -------------------------------
+// export const OpenTaskChart = AsyncHandler(async (req,res) => {
+    
+// })
 
 
 
