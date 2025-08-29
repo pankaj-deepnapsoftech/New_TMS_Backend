@@ -2,6 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import mongoose from "mongoose";
 
 // ------------------------- local imports here ---------------------------
+import { TaskModel } from "../models/Task.model.js";
 import { TicketModel } from "../models/Ticket.model.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 
@@ -111,7 +112,7 @@ export const TicketActivityChart = AsyncHandler(async (req, res) => {
     ]);
 
     // month names
-    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
     // make map for created/completed
     const createdMap = new Map(
@@ -141,11 +142,55 @@ export const TicketActivityChart = AsyncHandler(async (req, res) => {
 
 
 // ------------------------------- OpenTasks api Start Here -------------------------------
-// export const OpenTaskChart = AsyncHandler(async (req,res) => {
-    
-// })
+export const OpenTaskChart = AsyncHandler(async (req, res) => {
+    const creatorMatch = req?.currentUser?.admin
+        ? {}
+        : {
+            $or: [
+                { creator: new mongoose.Types.ObjectId(req?.currentUser?._id) },
+                { assign: new mongoose.Types.ObjectId(req?.currentUser?._id) }
+            ]
+        };
+
+    const data = await TaskModel.aggregate([
+        {
+            $match: creatorMatch
+        },
+        {
+            $lookup: {
+                from: "statushistories",
+                localField: "_id",
+                foreignField: "task_id",
+                as: "status",
+                pipeline: [
+                    { $sort: { createdAt: -1 } }, // latest status first
+                    { $limit: 1 }
+                ]
+            }
+        },
+        { $unwind: { path: "$status", preserveNullAndEmptyArrays: true } },
+        {
+            $match: {
+                "status.status": { $in: ["Not Started", "Re Open"] }
+            }
+        },
+        {
+            $group: {
+                _id: "$status.status",
+                count: { $sum: 1 }
+            }
+        }
+
+    ]);
+
+    return res.status(StatusCodes.OK).json({
+        data
+    });
+});
+// ------------------------------- OpenTasks api end here --------------------------------
 
 
+// ------------------------------- Completed Task
 
 
 
