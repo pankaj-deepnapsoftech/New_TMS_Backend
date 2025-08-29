@@ -7,7 +7,7 @@ import { LogoutUserIfLoginAnyWere } from "./UserLogoutHandler.js";
 
 
 export const Autherization = AsyncHandler(async (req,res,next) => {
-    LogoutUserIfLoginAnyWere(req,res,next)
+    await LogoutUserIfLoginAnyWere(req,res,next)
     const token = req.cookies.at || req.headers.authorization?.split(" ")[1]
     
     const {id} = VerifyToken(token);
