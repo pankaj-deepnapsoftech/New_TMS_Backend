@@ -4,7 +4,8 @@ import { Schema, model } from "mongoose";
 const schedule = new Schema({
     schedule_type: { type: String, required: true, enum: ['Monthly', 'Weekly', 'daily', 'yearly'] },
     date: { type: Date },
-    weekly: { type: [String] }
+    weekly: { type: [String] },
+    time:{type:Date}
 });
 
 
