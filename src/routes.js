@@ -3,6 +3,7 @@ import { Router } from "express";
 // ------------------------ local imports here --------------------------
 import { Autherization } from "./middleware/Autherization.js";
 import CommentRoutes from "./routes/Comment.route.js"
+import DashboardRoutes from "./routes/Dashboard.route.js"
 import DepartmentRoutes from "./routes/department.routes.js";
 import ImpDocsRoutes from "./routes/importantDocs.route.js";
 import NotificationRoutes from "./routes/Notification.route.js"
@@ -27,6 +28,7 @@ routes.use("/status",Autherization,StatusRoutes);
 routes.use("/renuals",Autherization,RenualRoutes);
 routes.use("/imp-docs",Autherization,ImpDocsRoutes);
 routes.use("/notification",Autherization,NotificationRoutes);
+routes.use("/dashboard",Autherization,DashboardRoutes);
 
 
 
