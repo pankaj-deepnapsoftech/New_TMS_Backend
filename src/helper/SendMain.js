@@ -6,6 +6,11 @@ import ejs from 'ejs';
 // -------------------------- local imports here ---------------------------
 import { config } from '../config/env.config.js';
 import { transporter } from '../config/nodemailer.config.js';
+import getLogger from '../utils/logger.js';
+
+
+
+const logger = getLogger('Server.js file');
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -25,8 +30,9 @@ export const SendMail = async (templatename, templateData, senderDetails) => {
     };
 
     await transporter.sendMail(mailOptions);
-    console.log('Mail sent successfully');
+    logger.info('Mail sent successfully');
   } catch (error) {
-    console.error('Error sending mail:', error);
+    logger.error('Error sending mail:');
+    console.log(error)
   }
 };

@@ -5,44 +5,48 @@ export const CreateUserService = async (value) => {
     return data;
 };
 
-export const FindByUsernameOrEmail = async (username,email) => {
-    const data = await UserModel.findOne({$or:[{username},{email}]}).lean();
+export const FindByUsernameOrEmail = async (username, email) => {
+    const data = await UserModel.findOne({ $or: [{ username }, { email }] }).lean();
     return data;
 };
 
 export const FindByEmail = async (email) => {
-    const data = await UserModel.findOne({email:email}).select("-password -refresh_token").lean();
+    const data = await UserModel.findOne({ email: email }).select("-password -refresh_token").lean();
     return data;
 }
 
 
-export const FindByUsername = async(username) => {
-    const data = await UserModel.findOne({username}).select("-password -refresh_token").lean();
+export const FindByUsername = async (username) => {
+    const data = await UserModel.findOne({ username }).select("-password -refresh_token").lean();
     return data;
 }
 
-export const FindById =  async(id) => {
+export const FindById = async (id) => {
     const data = await UserModel.findById(id).select("-password -refresh_token").lean();
     return data;
 }
 
 
-export const UpdatePassword = async (id,password) => {
-    const data = await UserModel.findByIdAndUpdate(id,{password},{new:true,lean:true});
+export const UpdatePassword = async (id, password) => {
+    const data = await UserModel.findByIdAndUpdate(id, { password }, { new: true, lean: true });
     return data;
 }
 
-export const UpdateUser = async (id,value) => {
-    const data = await UserModel.findByIdAndUpdate(id,value,{new:true,lean:true});
+export const UpdateUser = async (id, value) => {
+    const data = await UserModel.findByIdAndUpdate(id, value, { new: true, lean: true });
     return data
 }
 
-
-export const FindAllUsers = async(skip,limit) => {
-    const data = await UserModel.find({admin:false}).select("-password -refresh_token -admin").populate([{path:"role"},{path:"department"}]).skip(skip).limit(limit).lean();
+export const FindAllUsers = async (skip, limit) => {
+    const data = await UserModel.find({ admin: false }).select("-password -refresh_token -admin").populate([{ path: "role" }, { path: "department" }]).skip(skip).limit(limit).lean();
     return data;
 }
 
+
+export const FindByUserWithId = async (id) => {
+    const data = await UserModel.findById(id).select("refresh_token").lean();
+    return data;
+}
 
 
 

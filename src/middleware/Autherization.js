@@ -3,8 +3,11 @@ import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { BadRequestError } from "../utils/CoustomError.js";
 import { VerifyToken } from "../utils/TokenHandler.js";
 
+import { LogoutUserIfLoginAnyWere } from "./UserLogoutHandler.js";
 
-export const Autherization = AsyncHandler(async (req,_res,next) => {
+
+export const Autherization = AsyncHandler(async (req,res,next) => {
+    LogoutUserIfLoginAnyWere(req,res,next)
     const token = req.cookies.at || req.headers.authorization?.split(" ")[1]
     
     const {id} = VerifyToken(token);
