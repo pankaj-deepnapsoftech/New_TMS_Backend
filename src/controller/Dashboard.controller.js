@@ -12,8 +12,8 @@ import { AsyncHandler } from "../utils/AsyncHandler.js";
 export const TicketOverViewChart = AsyncHandler(async (req, res) => {
     const currentYear = new Date().getFullYear();
 
-    const creatorMatch = req?.currentUser?.admin 
-        ? {} 
+    const creatorMatch = req?.currentUser?.admin
+        ? {}
         : { creator: new mongoose.Types.ObjectId(req?.currentUser?._id) };
 
     const data = await TicketModel.aggregate([
@@ -28,61 +28,116 @@ export const TicketOverViewChart = AsyncHandler(async (req, res) => {
                 _id: { month: { $month: "$createdAt" } },
                 v: { $sum: 1 }
             }
-        },
-        {
-            $sort: { "_id.month": 1 }
-        },
-        {
-            $project: {
-                _id: 0,
-                m: {
-                    $arrayElemAt: [
-                        [
-                            "", // index 0 placeholder
-                            "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-                        ],
-                        "$_id.month"
-                    ]
-                },
-                v: 1
-            }
         }
     ]);
 
+    // --- Create full year array ---
+    const months = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+
+    // Map aggregation result into a lookup
+    const monthMap = {};
+    data.forEach(item => {
+        monthMap[item._id.month] = item.v;
+    });
+
+    // Build final array with 0 for missing months
+    const result = months.map((m, idx) => ({
+        m,
+        v: monthMap[idx + 1] || 0
+    }));
+
     return res.status(StatusCodes.OK).json({
-        data
+        data: result
     });
 });
+
 // ----------------------------- Ticket OverView Code end here ---------------------------
 
 
 // ------------------------------ Ticket activity Status start here ------------------------
-export const TicketActivityChart = AsyncHandler(async (req,res) => {
-const currentYear = new Date().getFullYear();
+export const TicketActivityChart = AsyncHandler(async (req, res) => {
+    const currentYear = new Date().getFullYear();
 
-    const creatorMatch = req?.currentUser?.admin 
-        ? {} 
+    const creatorMatch = req?.currentUser?.admin
+        ? {}
         : { creator: new mongoose.Types.ObjectId(req?.currentUser?._id) };
 
-        const data = await TicketModel.aggregate([
-            {
-                $match:{...creatorMatch, $expr: { $eq: [{ $year: "$createdAt" }, currentYear] }}
-            },
-            {
-                $lookup:{
-                    from:"statushistories",
-                    localField:"_id",
-                    foreignField:"ticket_id",
-                    as:"status"
-                }
+    const rawData = await TicketModel.aggregate([
+        {
+            $match: {
+                ...creatorMatch,
+                $expr: { $eq: [{ $year: "$createdAt" }, currentYear] }
             }
-        ]);
+        },
+        {
+            $facet: {
+                created: [
+                    {
+                        $group: {
+                            _id: { month: { $month: "$createdAt" } },
+                            created: { $sum: 1 }
+                        }
+                    }
+                ],
+                completed: [
+                    {
+                        $lookup: {
+                            from: "statushistories",
+                            localField: "_id",
+                            foreignField: "ticket_id",
+                            as: "status",
+                            pipeline: [
+                                { $sort: { createdAt: -1 } },
+                                { $limit: 1 }
+                            ]
+                        }
+                    },
+                    { $unwind: { path: "$status", preserveNullAndEmptyArrays: true } },
+                    {
+                        $match: { "status.status": { $in: ["Completed", "Closed"] } }
+                    },
+                    {
+                        $group: {
+                            _id: { month: { $month: "$status.createdAt" } },
+                            completed: { $sum: 1 }
+                        }
+                    }
+                ]
+            }
+        }
+    ]);
 
-        return res.status(StatusCodes.OK).json({
-        data
+    // month names
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+    // make map for created/completed
+    const createdMap = new Map(
+        rawData[0].created.map(item => [item._id.month, item.created])
+    );
+    const completedMap = new Map(
+        rawData[0].completed.map(item => [item._id.month, item.completed])
+    );
+
+    // build final data for all 12 months
+    const finalData = months.map((name, idx) => {
+        const monthNum = idx + 1;
+        return {
+            name,
+            created: createdMap.get(monthNum) || 0,
+            completed: completedMap.get(monthNum) || 0
+        };
     });
-})
+
+    return res.status(StatusCodes.OK).json({
+        year: currentYear,
+        data: finalData
+    });
+});
+
+
 // ------------------------------ Ticket activity Status end here ------------------------
 
 
