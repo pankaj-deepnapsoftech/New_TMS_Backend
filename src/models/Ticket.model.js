@@ -13,32 +13,13 @@ const TicketSchema = new Schema(
   { timestamps: true }
 );
 
-// Pre-save middleware to generate unique incremental ticket_id
-TicketSchema.pre("save", async function (next) {
+TicketSchema.pre("save", function(next) {
   if (this.isNew && !this.ticket_id) {
-    try {
-      // Find the last ticket by ticket_id (sorted descending)
-      const lastTicket = await this.constructor
-        .findOne({}, { ticket_id: 1 })
-        .sort({ createdAt: -1 })
-        .lean();
-
-      let newNumber = 1;
-
-      if (lastTicket && lastTicket.ticket_id) {
-        // Extract numeric part from "TKT-0007"
-        const lastNumber = parseInt(lastTicket.ticket_id.split("-")[1], 10);
-        newNumber = lastNumber + 1;
-      }
-
-      // Example: TKT-0001, TKT-0002 ...
-      this.ticket_id = `TKT-${String(newNumber).padStart(4, "0")}`;
-    } catch (err) {
-      return next(err);
-    }
+    this.ticket_id = "TKT-" + this._id.toString().slice(-6).toUpperCase();
   }
   next();
 });
+
 
 TicketSchema.index({ ticket_id: 1}, { unique: true })
 

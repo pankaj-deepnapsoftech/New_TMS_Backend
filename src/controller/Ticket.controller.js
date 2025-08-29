@@ -5,6 +5,7 @@ import { DeleteManyComments } from "../Services/Comments.services.js";
 import { CreateStatusService, DeleteManyStatusService } from "../Services/StatusHistory.services.js";
 import { DeleteManyTasks } from "../Services/task.services.js";
 import { CreateTicketService, DeleteTicketService, getCardDataforAdmin, GetCardDataForUser, GetSingleTicketByTicketId, GetTicketServiceByAssign, GetTicketServiceByCreator, UpdateTicketService } from "../Services/Ticket.services.js";
+import { PushTicketData } from "../socket/tickets.socket.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { BadRequestError } from "../utils/CoustomError.js";
 import { mergeCardData } from "../utils/ReducerFunction.js";
@@ -19,6 +20,8 @@ export const CreateTicket = AsyncHandler(async (req, res) => {
         data: result
     });
     await CreateStatusService({ ticket_id: result._id });
+    const pushTicket = await GetSingleTicketByTicketId(result.ticket_id)
+    PushTicketData(pushTicket);
 });
 // ----------------------------- ticket create api end here -------------------------------
 
@@ -33,7 +36,7 @@ export const getTicket = AsyncHandler(async (req, res) => {
     const limits = parseInt(limit) || 10;
     const skip = (pages - 1) * limits
     const data = await GetTicketServiceByCreator(admin, id, limits, skip);
-    return res.status(StatusCodes.OK).json({
+    res.status(StatusCodes.OK).json({
         data: data.data,
         totalPage: data.totalPage
     });
