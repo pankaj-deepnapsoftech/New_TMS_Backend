@@ -5,6 +5,8 @@ import mongoose from "mongoose";
 import { TaskModel } from "../models/Task.model.js";
 import { TicketModel } from "../models/Ticket.model.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
+import { ImportantDocsModel } from "../models/ImportentDocs.model.js";
+import { RenualModel } from "../models/renuals.model.js";
 
 
 
@@ -190,10 +192,86 @@ export const OpenTaskChart = AsyncHandler(async (req, res) => {
 // ------------------------------- OpenTasks api end here --------------------------------
 
 
-// ------------------------------- Completed Task
+// ------------------------------- Completed Task api Start here --------------------
+export const CompletedTaskChart = AsyncHandler(async (req, res) => {
+    const creatorMatch = req?.currentUser?.admin
+        ? {}
+        : {
+            $or: [
+                { creator: new mongoose.Types.ObjectId(req?.currentUser?._id) },
+                { assign: new mongoose.Types.ObjectId(req?.currentUser?._id) }
+            ]
+        };
+
+    const data = await TaskModel.aggregate([
+        {
+            $match: creatorMatch
+        },
+        {
+            $lookup: {
+                from: "statushistories",
+                localField: "_id",
+                foreignField: "task_id",
+                as: "status",
+                pipeline: [
+                    { $sort: { createdAt: -1 } }, // latest status first
+                    { $limit: 1 }
+                ]
+            }
+        },
+        { $unwind: { path: "$status", preserveNullAndEmptyArrays: true } },
+        {
+            $match: {
+                "status.status": "Completed"
+            }
+        },
+        {
+            $group: {
+                _id: null,
+                totalCompleted: { $sum: 1 },
+                overdueCompleted: {
+                    $sum: {
+                        $cond: [
+                            { $lt: ["$due_date", "$status.createdAt"] }, // if dueDate < now
+                            1,
+                            0
+                        ]
+                    }
+                }
+            }
+        }
+    ]);
+
+    return res.status(StatusCodes.OK).json({
+        totalCompleted: data[0]?.totalCompleted || 0,
+        overdueCompleted: data[0]?.overdueCompleted || 0
+    });
+});
+// ------------------------------- Completed Task api End here ----------------------
 
 
 
+
+// ------------------------------------ Dashboard card data start here --------------------------
+export const DashboardCardData = AsyncHandler(async (req, res) => {
+    const result = await ImportantDocsModel.aggregate([
+        {
+            $group: {
+                _id: null,
+                totalLeads: { $sum: "$leads" },
+                totalDeals: { $sum: { $size: "$deals" } },
+                totalCustomers: { $sum: { $size: "$customer" } },
+            }
+        }
+    ]);
+
+    const  totalRenuals = await RenualModel.find().countDocuments();
+    delete result[0]._id
+    return res.status(StatusCodes.OK).json({
+        data:{...result[0],totalRenuals}
+    })
+});
+// ------------------------------------ Dashboard card data end here  --------------------------
 
 
 
