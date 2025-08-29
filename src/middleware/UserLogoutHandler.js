@@ -9,12 +9,12 @@ import { VerifyToken } from "../utils/TokenHandler.js";
 export const LogoutUserIfLoginAnyWere = async (req, res, next) => {
     const token = req?.cookies?.rt
     if(!token){
-        throw new BadRequestError("Token must be provide","LogoutUserIfLoginAnyWere function")
+        next(new BadRequestError("Token must be provide","LogoutUserIfLoginAnyWere function"))
     }
     const { id } = VerifyToken(token);
     const user = await FindByUserWithId(id);
     if (!user) {
-        throw new NotFoundError("User Not Exist", "LogoutUserIfLoginAnyWere function")
+        next( new NotFoundError("User Not Exist", "LogoutUserIfLoginAnyWere function"))
     }
     if (token !== user.refresh_token) {
         res.clearCookie('at').clearCookie('rt').status(StatusCodes.OK).json({
