@@ -11,14 +11,14 @@ export const SocketConnection = async (server) => {
             credentials:true
         }
     })
-
     io.on("connection", (socket) => {
         console.log(`A user Socket Connection Successful with id : ${socket.id}`)
+
+        socket.on("disconnect", (reason) => {
+            console.log(`A user connection defused. Reason: ${reason}`)
+        })
     })
 
-    io.on("disconnect", (reason) => {
-        console.log(`A user connection Defuse reason : ${reason} `)
-    })
 
     return io
 }
