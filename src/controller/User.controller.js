@@ -4,11 +4,11 @@ import { StatusCodes } from "http-status-codes";
 // ------------------------------ local import here ---------------------------
 import { config } from "../config/env.config.js";
 import { SendMail } from "../helper/SendMain.js";
+import { UserModel } from "../models/User.model.js";
 import { CreateUserService, FindAllUsers, FindById, FindByUsernameOrEmail, UpdateUser } from "../Services/User.services.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { BadRequestError } from "../utils/CoustomError.js";
 import { SingToken, VerifyToken } from "../utils/TokenHandler.js";
-import { UserModel } from "../models/User.model.js";
 
 
 // --------------------------- user registeration code start here ------------------------------

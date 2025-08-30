@@ -276,7 +276,7 @@ export const DashboardCardData = AsyncHandler(async (req, res) => {
 // ------------------------------- dashboard user Task Status code start here ---------------
 export const DashboardUserTaskStatus = AsyncHandler(async (req,res) => {
     const {id} = req.params;
-    if(id){
+    if(!id){
         throw new BadRequestError("id is required field","DashboardUserTaskStatus function")
     }
     const {page,limit} = req.query;
