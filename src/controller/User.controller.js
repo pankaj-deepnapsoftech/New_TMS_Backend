@@ -8,6 +8,7 @@ import { CreateUserService, FindAllUsers, FindById, FindByUsernameOrEmail, Updat
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { BadRequestError } from "../utils/CoustomError.js";
 import { SingToken, VerifyToken } from "../utils/TokenHandler.js";
+import { UserModel } from "../models/User.model.js";
 
 
 // --------------------------- user registeration code start here ------------------------------
@@ -20,7 +21,7 @@ export const RegisterUser = AsyncHandler(async (req, res) => {
     const create = await CreateUserService(data);
     const token = SingToken({ email: create.email, id: create._id }, "1day");
     const verificationLink = `${config.NODE_ENV === "development" ? config.LOCAL_BACKEND_URL : config.BACKEND_URL}/user/verify?token=${token}`
-    SendMail("EmailVerification.ejs", { userName: create.username, verificationLink: verificationLink },{subject:"Email verification",email:create.email})
+    SendMail("EmailVerification.ejs", { userName: create.username, verificationLink: verificationLink }, { subject: "Email verification", email: create.email })
     return res.status(StatusCodes.CREATED).json({
         message: "User Created Successfully"
     });
@@ -64,7 +65,7 @@ export const Loginuser = AsyncHandler(async (req, res) => {
     });
 
     res.status(StatusCodes.OK).json({
-        message:"User login Successfully",
+        message: "User login Successfully",
         access_token,
         refresh_token
     })
@@ -126,10 +127,16 @@ export const verifyEmail = AsyncHandler(async (req, res) => {
 
 // --------------------------------- AllUser data api start here --------------------------
 export const AllUsers = AsyncHandler(async (req, res) => {
+
+    if (req?.currentUser?.admin) {
+        return res.status(StatusCodes.OK).json({
+            data: []
+        });
+    }
     const { page, limit } = req.query;
     const pages = parseInt(page) || 1;
     const limits = parseInt(limit) || 10;
-    const skip = (pages - 1) * limits
+    const skip = (pages - 1) * limits;
     const data = await FindAllUsers(skip, limits);
     return res.status(StatusCodes.OK).json({
         data
@@ -147,15 +154,22 @@ export const updateUserData = AsyncHandler(async (req, res) => {
         throw new BadRequestError("User not found", "updateUserData function")
     }
     return res.status(StatusCodes.OK).json({
-        message:"User updated Successfully",
-        data:result
+        message: "User updated Successfully",
+        data: result
     });
 });
 // ------------------------------ user update api end here -------------------------------
 
 
 
-// ----------------------------- 
+// -----------------------------  all User For assigning code start here -----------------
+export const assignedAllUserData = AsyncHandler(async (req,res) => {
+    const data = await UserModel.find({admin:false}).select("full_name username");
+    return res.status(StatusCodes.OK).json({
+        data
+    });
+});
+// ------------------------------ all users for assigning code end here ---------------------
 
 
 
