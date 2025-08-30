@@ -7,6 +7,7 @@ import { RenualModel } from "../models/renuals.model.js";
 import { TaskModel } from "../models/Task.model.js";
 import { TicketModel } from "../models/Ticket.model.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
+import { BadRequestError } from "../utils/CoustomError.js";
 
 
 
@@ -275,6 +276,9 @@ export const DashboardCardData = AsyncHandler(async (req, res) => {
 // ------------------------------- dashboard user Task Status code start here ---------------
 export const DashboardUserTaskStatus = AsyncHandler(async (req,res) => {
     const {id} = req.params;
+    if(id){
+        throw new BadRequestError("id is required field","DashboardUserTaskStatus function")
+    }
     const {page,limit} = req.query;
     const pages = parseInt(page) || 1;
     const limits = parseInt(limit) || 10;
