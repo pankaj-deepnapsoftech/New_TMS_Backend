@@ -289,7 +289,7 @@ export const DeleteTicketService = async (id) => {
     return result;
 };
 
-export const GetSingleTicketByTicketId = async (id) => {
+export const GetSingleTicketByTicketId = async (id,refrance) => {
     const result = await TicketModel.aggregate([
         {
             $match: { ticket_id: id }
@@ -301,6 +301,9 @@ export const GetSingleTicketByTicketId = async (id) => {
                 foreignField: "ticket_id",
                 as: "task",
                 pipeline: [
+                  {
+                    $match:{$or:[{assign:new mongoose.Types.ObjectId(refrance)},{creator: new mongoose.Types.ObjectId(refrance)}]}
+                  },
                     {
                         $lookup: {
                             from: "statushistories",
