@@ -128,7 +128,7 @@ export const verifyEmail = AsyncHandler(async (req, res) => {
 // --------------------------------- AllUser data api start here --------------------------
 export const AllUsers = AsyncHandler(async (req, res) => {
 
-    if (req?.currentUser?.admin) {
+    if (!req?.currentUser?.admin) {
         return res.status(StatusCodes.OK).json({
             data: []
         });
@@ -164,7 +164,7 @@ export const updateUserData = AsyncHandler(async (req, res) => {
 
 // -----------------------------  all User For assigning code start here -----------------
 export const assignedAllUserData = AsyncHandler(async (req,res) => {
-    const data = await UserModel.find({admin:false}).select("full_name username");
+    const data = await UserModel.find({admin:false}).populate("department").select("full_name username");
     return res.status(StatusCodes.OK).json({
         data
     });
