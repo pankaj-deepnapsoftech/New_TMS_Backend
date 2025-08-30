@@ -316,9 +316,9 @@ export const DashboardUserTaskStatus = AsyncHandler(async (req,res) => {
 // ----------------------------- dashboard Ticket overdue data code start here ----------------
 export const DashboardTicketOverdueChart = AsyncHandler(async (req,res) => {
     const date =  new Date();
-    const data = await TicketModel.find({due_date:{$lt:date}});
+    const data = await TicketModel.find({due_date:{$lt:date}}).countDocuments();
     return res.status(StatusCodes.OK).json({
-        data
+        overdureTicket:data
     });
 });
 // ----------------------------- dashboard Ticket Overdue data code end here -----------------
