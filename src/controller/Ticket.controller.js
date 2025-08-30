@@ -103,7 +103,7 @@ export const getTicketbyAssign = AsyncHandler(async (req, res) => {
 // ----------------------------- get Single Ticket data By Ticket id  ---------------------------
 export const getSingleTicket = AsyncHandler(async (req, res) => {
     const { id } = req.params;
-    const data = await GetSingleTicketByTicketId(id);
+    const data = await GetSingleTicketByTicketId(id,req?.currentUser?._id);
     return res.status(StatusCodes.OK).json({
         data
     })
