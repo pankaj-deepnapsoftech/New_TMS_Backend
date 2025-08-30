@@ -250,8 +250,6 @@ export const CompletedTaskChart = AsyncHandler(async (req, res) => {
 // ------------------------------- Completed Task api End here ----------------------
 
 
-
-
 // ------------------------------------ Dashboard card data start here --------------------------
 export const DashboardCardData = AsyncHandler(async (req, res) => {
     const result = await ImportantDocsModel.aggregate([
@@ -272,6 +270,49 @@ export const DashboardCardData = AsyncHandler(async (req, res) => {
     })
 });
 // ------------------------------------ Dashboard card data end here  --------------------------
+
+
+// ------------------------------- dashboard user Task Status code start here ---------------
+export const DashboardUserTaskStatus = AsyncHandler(async (req,res) => {
+    const {id} = req.params;
+    const {page,limit} = req.query;
+    const pages = parseInt(page) || 1;
+    const limits = parseInt(limit) || 10;
+    const skip = (pages -1 ) * limits;
+      const data = await TaskModel.aggregate([
+        {
+            $match: {assign:new mongoose.Types.ObjectId(id)}
+        },
+        {
+            $lookup: {
+                from: "statushistories",
+                localField: "_id",
+                foreignField: "task_id",
+                as: "status",
+                pipeline: [
+                    { $sort: { createdAt: -1 } }, // latest status first
+                    { $limit: 1 }
+                ]
+            }
+        },
+        { $unwind: { path: "$status", preserveNullAndEmptyArrays: true } },
+        {$skip:skip},
+        {$limit:limits}
+
+       
+    ]);
+    return res.status(StatusCodes.OK).json({
+        data
+    })
+});
+// ------------------------------- dashboard user Task Status code end here ---------------
+
+
+
+
+
+
+
 
 
 
