@@ -2,6 +2,7 @@ import { Router } from "express";
 
 // ------------------------ local imports here --------------------------
 import { Autherization } from "./middleware/Autherization.js";
+import AssetsRoute from "./routes/Assets.route.js"
 import CommentRoutes from "./routes/Comment.route.js"
 import DashboardRoutes from "./routes/Dashboard.route.js"
 import DepartmentRoutes from "./routes/department.routes.js";
@@ -29,6 +30,7 @@ routes.use("/renuals",Autherization,RenualRoutes);
 routes.use("/imp-docs",Autherization,ImpDocsRoutes);
 routes.use("/notification",Autherization,NotificationRoutes);
 routes.use("/dashboard",Autherization,DashboardRoutes);
+routes.use("/assets",Autherization,AssetsRoute);
 
 
 
