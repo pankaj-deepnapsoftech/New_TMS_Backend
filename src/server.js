@@ -62,7 +62,7 @@ function MiddlewareHandler(app) {
 function RouteHandler(app) {
     app.use("/health", HealthPage);
     app.use("/api/v1", MainRoutes);
-    app.use("/", (_req, _res, next) => next(new BadRequestError("Path not found")));
+    app.use("/", (req, _res, next) => next(new BadRequestError(`Path not found url is : ${req.originalUrl}`,"Error handler")));
 }
 // ----------------- route handler middleware end here ------------------------------
 
