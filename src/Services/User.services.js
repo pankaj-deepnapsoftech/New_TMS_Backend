@@ -22,7 +22,7 @@ export const FindByUsername = async (username) => {
 }
 
 export const FindById = async (id) => {
-    const data = await UserModel.findById(id).select("-password -refresh_token").lean();
+    const data = await UserModel.findById(id).select("-password -refresh_token").select("-password -refresh_token -admin").populate([{ path: "role" }, { path: "department" }]).lean();
     return data;
 }
 
