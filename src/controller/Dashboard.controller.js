@@ -264,28 +264,28 @@ export const DashboardCardData = AsyncHandler(async (req, res) => {
         }
     ]);
 
-    const  totalRenuals = await RenualModel.find().countDocuments();
+    const totalRenuals = await RenualModel.find().countDocuments();
     delete result[0]._id
     return res.status(StatusCodes.OK).json({
-        data:{...result[0],totalRenuals}
+        data: { ...result[0], totalRenuals }
     })
 });
 // ------------------------------------ Dashboard card data end here  --------------------------
 
 
 // ------------------------------- dashboard user Task Status code start here ---------------
-export const DashboardUserTaskStatus = AsyncHandler(async (req,res) => {
-    const {id} = req.params;
-    if(!id){
-        throw new BadRequestError("id is required field","DashboardUserTaskStatus function")
+export const DashboardUserTaskStatus = AsyncHandler(async (req, res) => {
+    const { id } = req.params;
+    if (!id) {
+        throw new BadRequestError("id is required field", "DashboardUserTaskStatus function")
     }
-    const {page,limit} = req.query;
+    const { page, limit } = req.query;
     const pages = parseInt(page) || 1;
     const limits = parseInt(limit) || 10;
-    const skip = (pages -1 ) * limits;
-      const data = await TaskModel.aggregate([
+    const skip = (pages - 1) * limits;
+    const data = await TaskModel.aggregate([
         {
-            $match: {assign:new mongoose.Types.ObjectId(id)}
+            $match: { assign: new mongoose.Types.ObjectId(id) }
         },
         {
             $lookup: {
@@ -300,10 +300,10 @@ export const DashboardUserTaskStatus = AsyncHandler(async (req,res) => {
             }
         },
         { $unwind: { path: "$status", preserveNullAndEmptyArrays: true } },
-        {$skip:skip},
-        {$limit:limits}
+        { $skip: skip },
+        { $limit: limits }
 
-       
+
     ]);
     return res.status(StatusCodes.OK).json({
         data
@@ -314,15 +314,74 @@ export const DashboardUserTaskStatus = AsyncHandler(async (req,res) => {
 
 
 // ----------------------------- dashboard Ticket overdue data code start here ----------------
-export const DashboardTicketOverdueChart = AsyncHandler(async (req,res) => {
-    const date =  new Date();
-    const data = await TicketModel.find({due_date:{$lt:date}}).countDocuments();
+export const DashboardTicketOverdueChart = AsyncHandler(async (_req, res) => {
+    const date = new Date();
+    const data = await TicketModel.find({ due_date: { $lt: date } }).countDocuments();
     return res.status(StatusCodes.OK).json({
-        overdureTicket:data
+        overdureTicket: data
     });
 });
 // ----------------------------- dashboard Ticket Overdue data code end here -----------------
 
+
+
+// --------------------------------- dashboard TaskCount According Department code start here --------------------------
+export const DashboardTaskCount = AsyncHandler(async (req, res) => {
+  const admin = req.currentUser.admin
+    ? {}
+    : { creator: new mongoose.Types.ObjectId(req.currentUser._id) };
+
+  const data = await TicketModel.aggregate([
+    {
+      $match: admin,
+    },
+    {
+      $lookup: {
+        from: "tasks",
+        foreignField: "ticket_id",
+        localField: "_id",
+        as: "tasks",
+      },
+    },
+    {
+      $lookup: {
+        from: "departments",
+        foreignField: "_id",
+        localField: "department",
+        as: "department",
+      },
+    },
+    {
+      $unwind: { path: "$department", preserveNullAndEmptyArrays: true },
+    },
+    // count tasks per department
+    {
+      $project: {
+        department: "$department.name",
+        taskCount: { $size: "$tasks" },
+      },
+    },
+    {
+      $group: {
+        _id: "$department",
+        totalTasks: { $sum: "$taskCount" },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        department: "$_id",
+        totalTasks: 1,
+      },
+    },
+  ]);
+
+  return res.status(StatusCodes.OK).json({
+    data,
+  });
+});
+
+// -----------------dashboard TaskCount according department code end here -----------------------
 
 
 
