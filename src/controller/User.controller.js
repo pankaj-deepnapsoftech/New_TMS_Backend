@@ -128,7 +128,10 @@ export const verifyEmail = AsyncHandler(async (req, res) => {
 // --------------------------------- AllUser data api start here --------------------------
 export const AllUsers = AsyncHandler(async (req, res) => {
 
+    console.log(req.currentUser)
+    console.log("this function is running")
     if (!req?.currentUser?.admin) {
+        console.log("not admin")
         return res.status(StatusCodes.OK).json({
             data: []
         });
@@ -138,6 +141,7 @@ export const AllUsers = AsyncHandler(async (req, res) => {
     const limits = parseInt(limit) || 10;
     const skip = (pages - 1) * limits;
     const data = await FindAllUsers(skip, limits);
+    console.log(data)
     return res.status(StatusCodes.OK).json({
         data
     });

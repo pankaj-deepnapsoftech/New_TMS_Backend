@@ -7,9 +7,10 @@ export const SocketConnection = async (server) => {
     const io = new Server(server, {
         cors: {
             origin: config.NODE_ENV === "development" ? config.LOCAL_CLIENT_URL : config.CLIENT_URL,
-            methods: ["POST", "PUT", "PATCH", "DELETE", "OPTION","GET"],
-            credentials:true
-        }
+            methods: ["POST", "PUT", "PATCH", "DELETE", "OPTION", "GET"],
+            credentials: true,
+        },
+        transports: ["polling", "websocket"]
     })
     io.on("connection", (socket) => {
         console.log(`A user Socket Connection Successful with id : ${socket.id}`)
