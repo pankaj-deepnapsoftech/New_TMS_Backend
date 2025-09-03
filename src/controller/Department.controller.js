@@ -25,7 +25,7 @@ export const getDepartment = AsyncHandler(async (req,res) => {
     const pages = parseInt(page) || 1;
     const limits = parseInt(limit) || 10;
     const skip = (pages - 1) * limits;
-    const data = await GetDepartmentByCreator(limit,skip);
+    const data = await GetDepartmentByCreator(limits,skip);
     return res.status(StatusCodes.OK).json({
         data
     });
