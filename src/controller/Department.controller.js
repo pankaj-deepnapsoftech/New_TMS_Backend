@@ -27,7 +27,8 @@ export const getDepartment = AsyncHandler(async (req,res) => {
     const skip = (pages - 1) * limits;
     const data = await GetDepartmentByCreator(limits,skip);
     return res.status(StatusCodes.OK).json({
-        data
+        data:data.data,
+        totalPage:data.totalPage
     });
 });
 // -------------------- department get api end here -----------------------------------

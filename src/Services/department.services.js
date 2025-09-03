@@ -8,7 +8,8 @@ export const CreateDepartmentService = async (value) => {
 
 export const GetDepartmentByCreator = async(limit,skip) => {
     const data = await DepartmentModel.find({}).sort({_id:-1}).skip(skip).limit(limit).lean();
-    return data;
+    const TotalData = await DepartmentModel.find().countDocuments()
+    return {data,totalPage:Math.ceil(TotalData / limit)};
 }
 
 export const updateDepartmentService =  async (Id,value) => {
