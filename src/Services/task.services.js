@@ -23,6 +23,10 @@ export const DeleteManyTasks = async (id) => {
 };
 
 
+export const ExistingTasks = async (title) => {
+    const result = await TaskModel.findOne({title});
+    return result;
+}
 
 
 

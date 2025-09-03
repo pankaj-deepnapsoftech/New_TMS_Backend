@@ -4,7 +4,7 @@ import { StatusCodes } from "http-status-codes";
 import { DeleteManyComments } from "../Services/Comments.services.js";
 import { CreateNotificationService, DeleteManyNotification, GetSingleNotificationservice } from "../Services/notification.service.js";
 import { CreateStatusService, DeleteManyStatusService } from "../Services/StatusHistory.services.js";
-import { CreateTaskServices, DeleteTaskService, updateTaskService } from "../Services/task.services.js";
+import { CreateTaskServices, DeleteTaskService, ExistingTasks, updateTaskService } from "../Services/task.services.js";
 import { PushTaskNotification } from "../socket/notification.socket.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { BadRequestError } from "../utils/CoustomError.js";
@@ -13,6 +13,10 @@ import { BadRequestError } from "../utils/CoustomError.js";
 // ----------------------------- Task Create api start here ----------------------------
 export const CreateTask = AsyncHandler(async (req, res) => {
     const data = req.body;
+    const exist = await ExistingTasks(data.title);
+    if(exist) {
+        throw new BadRequestError("Task already created","CreateTask function")
+    }
     const result = await CreateTaskServices({ ...data, creator: req?.currentUser?._id });
     res.status(StatusCodes.CREATED).json({
         message: "task created successful",

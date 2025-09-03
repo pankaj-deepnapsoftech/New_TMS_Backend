@@ -22,6 +22,8 @@ const TaskSchema = new Schema({
     schedule: schedule,
 });
 
+TaskSchema.index({title:1})
+
 
 export const TaskModel = model("Task", TaskSchema);
 
