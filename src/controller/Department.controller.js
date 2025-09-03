@@ -10,7 +10,7 @@ import { BadRequestError } from "../utils/CoustomError.js";
 export const CreateDepartment = AsyncHandler(async (req,res) => {
     const data = req.body;
     const exist = await DepartmentAlreadyExist(data.name);
-    if(!exist){
+    if(exist){
         throw new BadRequestError("Department Already exist","CreateDepartment function")
     }
     const result = await CreateDepartmentService(data);
