@@ -139,7 +139,9 @@ export const AllUsers = AsyncHandler(async (req, res) => {
     const skip = (pages - 1) * limits;
     const data = await FindAllUsers(skip, limits);
     return res.status(StatusCodes.OK).json({
-        data
+        data:data.data,
+        totalPage:data.totalPage,
+        totalUsers:data.totalUsers
     });
 });
 // -------------------------------- AllUser data api end here ------------------------------
