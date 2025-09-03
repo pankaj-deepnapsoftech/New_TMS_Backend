@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 
 // ---------------------- local imports here ----------------------------
-import { CreateDepartmentService, DeleteDepartmentService, DepartmentDataWithoutLimit, GetDepartmentByCreator, updateDepartmentService } from "../Services/department.services.js";
+import { CreateDepartmentService, DeleteDepartmentService, DepartmentAlreadyExist, DepartmentDataWithoutLimit, GetDepartmentByCreator, updateDepartmentService } from "../Services/department.services.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { BadRequestError } from "../utils/CoustomError.js";
 
@@ -9,6 +9,10 @@ import { BadRequestError } from "../utils/CoustomError.js";
 // ------------------- department Createion api start here ---------------------------
 export const CreateDepartment = AsyncHandler(async (req,res) => {
     const data = req.body;
+    const exist = await DepartmentAlreadyExist(data.name);
+    if(!exist){
+        throw new BadRequestError("Department Already exist","CreateDepartment function")
+    }
     const result = await CreateDepartmentService(data);
     return res.status(StatusCodes.CREATED).json({
         message:"Department Created Ssuccessfully",
@@ -28,7 +32,8 @@ export const getDepartment = AsyncHandler(async (req,res) => {
     const data = await GetDepartmentByCreator(limits,skip);
     return res.status(StatusCodes.OK).json({
         data:data.data,
-        totalPage:data.totalPage
+        totalPage:data.totalPage,
+        total:data.total
     });
 });
 // -------------------- department get api end here -----------------------------------

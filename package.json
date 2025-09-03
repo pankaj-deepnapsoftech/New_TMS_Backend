@@ -9,7 +9,7 @@
     "production": "pm2 start src/index.js --name New-TMS-Backend",
     "lint": "eslint . --fix",
     "format": "prettier --write .",
-    "stop": "pm2 stop src/"
+    "stop": "pm2 stop src/index.js"
   },
   "keywords": [],
   "author": "",

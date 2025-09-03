@@ -50,6 +50,11 @@ export const FindByUserWithId = async (id) => {
 }
 
 
+export const DeleteUserService = async (id) => {
+    const data = await UserModel.findByIdAndDelete(id);
+    return data;
+}
+
 
 
 
